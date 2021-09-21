@@ -8,7 +8,7 @@
     {
       "userInput": "10",
       "cmdLineArgs": "2 2",
-      "output": "40\n"
+      "output": "The volume of the box is 40\n"
     }
   ]
 }
