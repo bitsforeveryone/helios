@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request
 
+import json
+
 import challenges.helloWorldC, challenges.calculatorC
 from libhelios import heliosChallenge, heliosSubmission
 
@@ -7,7 +9,13 @@ from challenges import *
 
 app = Flask(__name__)
 
+# load challenges
 heliosChallenge.heliosChallenge.loadChallenges()
+# load secrets
+secrets=open("secrets/misc")
+SECRETS=json.load(secrets)
+secrets.close()
+
 #
 # @app.route('/')
 # def hello_world():
@@ -38,10 +46,11 @@ def challengeSubmit():
         return "Failure"
 
 
+
 @app.route('/')
 def challenges():
     return render_template('challenges.html', challenges=heliosChallenge.heliosChallenge.challenges)
 
 
 if __name__ == '__main__':
-    app.run(ssl_context=('certs/cert.pem', 'certs/key.pem'),host="0.0.0.0",port="443")
+    app.run(ssl_context=('secrets/cert.pem', 'secrets/key.pem'),host="0.0.0.0",port="443")

@@ -29,7 +29,5 @@ class heliosChallenge:
             if file.endswith(".json"):
                 fp=open(file)
                 heliosChallenge.challenges.append(json.load(fp))
-
+                fp.close()
         os.chdir(programDir)
-
-
