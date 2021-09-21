@@ -1,0 +1,13 @@
+{
+  "name": "Hello to Me",
+  "points": "10",
+  "prompt": "Why don't you say hi to me? Remember to end your message properly, it's only polite..",
+  "language": "C",
+  "tests": [
+    {
+      "userInput": "",
+      "cmdLineArgs": "",
+      "output": "Hello World\n"
+    }
+  ]
+}

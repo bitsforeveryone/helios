@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for challenge in challenges %}
+<div class="p-3 mb-4 bg-light rounded-3 border">
+      <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">{{ challenge["name"]}}   ({{ challenge["points"] }})</h1>
+        <p class="col-md-8 fs-4">{{ challenge["prompt"] }}</p>
+        <button  class="btn btn-primary btn-lg" data-toggle="modal" data-target="#challengeAttemptModal" type="button" data-chalname="{{ challenge  ["name"] }}">Attempt</button>
+      </div>
+    </div>
+{%  endfor %}
+
+    <script>
+    function makeAttempt() {
+
+    }
+    </script>
+
+
+{#    submission modal #}
+
+    <div class="modal fade" id="challengeAttemptModal" tabindex="-1" role="dialog" aria-labelledby="Challenge Attempt" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="challengeAttemptTitle">Challenge Attempt</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+    <label for="codeSubmitTextArea">Code here</label>
+    <textarea class="form-control" id="codeSubmitTextArea" rows="15"></textarea>
+  </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Full Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{#  Finds modal and populates with jquery depending on button clicked  #}
+    <script>
+    $('#challengeAttemptModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var challengeName = button.data('chalname') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  var modal = $(this)
+  modal.find('#challengeAttemptTitle').text('Challenge Attempt ' + challengeName)
+  modal.find('#codeSubmitTextArea').val(challengeName)
+})
+    </script>
+
+{% endblock %}
