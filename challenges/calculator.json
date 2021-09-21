@@ -3,6 +3,7 @@
   "points": "20",
   "prompt": "I have two numbers that need to be...combined somehow.",
   "language": "C",
+  "prototype": "#include <stdio.h>\n\nint main() {\n\n\n\n}",
   "tests": [
     {
       "userInput": "2 4",

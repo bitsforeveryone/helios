@@ -3,6 +3,7 @@
   "points": "10",
   "prompt": "Why don't you say hi to me? Remember to end your message properly, it's only polite..",
   "language": "C",
+  "prototype": "#include <stdio.h>\n\nint main() {\n\n\n\n}",
   "tests": [
     {
       "userInput": "",

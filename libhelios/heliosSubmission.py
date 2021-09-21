@@ -31,13 +31,13 @@ class heliosSubmission:
         # check for c programs. Make container, compile, check output
         if(self.challenge["language"] is "C"):
             return all([
-                self.testC(test["userInput"],test["cmdLineArgs"])
+                self.testC(test["userInput"],test["cmdLineArgs"], test["output"])
                 for test in self.challenge["tests"]])
 
 
 
 
-    def testC(self,userin,cmdline):
+    def testC(self,userin,cmdline, neededOutput):
         compileCprogram = f"echo '{self.submission}' > submit.c && " \
                           f"echo -e '{userin}' > userin.doc && " \
                           "gcc --static submit.c -o submit && " \
@@ -50,7 +50,7 @@ class heliosSubmission:
                                                                     )
         # sleep to allow compilation before container removal
         sleep(3)
-        output = newContainer.logs()
+        programOutput = newContainer.logs()
         newContainer.stop()
         newContainer.remove()
-        return output
+        return programOutput.decode('utf-8') == neededOutput

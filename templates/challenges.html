@@ -2,24 +2,21 @@
 
 {% block content %}
     {% for challenge in challenges %}
+
 <div class="p-3 mb-4 bg-light rounded-3 border">
       <div class="container-fluid py-5">
             <h1 class="display-5 fw-bold">{{ challenge["name"]}}   ({{ challenge["points"] }})</h1>
         <p class="col-md-8 fs-4">{{ challenge["prompt"] }}</p>
-        <button  class="btn btn-primary btn-lg" data-toggle="modal" data-target="#challengeAttemptModal" type="button" data-chalname="{{ challenge  ["name"] }}">Attempt</button>
+        <button  class="btn btn-primary btn-lg" data-toggle="modal" data-target="#challengeAttemptModal" type="button"
+                 data-chalname="{{ challenge  ["name"] }}"
+                 data-chalprototype="{{ challenge["prototype"] }}">Attempt</button>
       </div>
     </div>
 {%  endfor %}
 
-    <script>
-    function makeAttempt() {
-
-    }
-    </script>
 
 
 {#    submission modal #}
-
     <div class="modal fade" id="challengeAttemptModal" tabindex="-1" role="dialog" aria-labelledby="Challenge Attempt" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -34,26 +31,54 @@
     <label for="codeSubmitTextArea">Code here</label>
     <textarea class="form-control" id="codeSubmitTextArea" rows="15"></textarea>
   </div>
+              <div id="gradingLoaderCtr"  class="d-none"><div id="gradingLoader"></div><p class="mr-4">CHECKING</p></div>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Full Send</button>
+        <button type="button" class="btn btn-primary" id="submitattempt">Full Send</button>
       </div>
     </div>
   </div>
 </div>
 
 
+
+
 {#  Finds modal and populates with jquery depending on button clicked  #}
     <script>
+    var currentChallenge=""
     $('#challengeAttemptModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget) // Button that triggered the modal
-  var challengeName = button.data('chalname') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  currentChallenge = button.data('chalname') // Extract info from data-* attributes
+  var challengePrototype = button.data('chalprototype')
   var modal = $(this)
-  modal.find('#challengeAttemptTitle').text('Challenge Attempt ' + challengeName)
-  modal.find('#codeSubmitTextArea').val(challengeName)
+  modal.find('#challengeAttemptTitle').text('Attempting: ' + currentChallenge)
+  modal.find('#codeSubmitTextArea').val(challengePrototype)
 })
+    $('#submitattempt').click(function () {
+        var userSubmission=$("#codeSubmitTextArea").val()
+        $('#gradingLoaderCtr').removeClass("d-none")
+        $.post( "/submit",
+            { challenge: currentChallenge,
+            submission: userSubmission},
+            function( data ) { //success callback
+            receiveResults(data)
+}).fail(function(response) {
+    receiveResults("error")
+        });
+    });
+    {# On receive results, if success, report to user and refresh page #}
+    function receiveResults(data) {
+        if(data==="Success") {
+            alert("Great, that checked out!");
+            location.reload()
+        }
+        else {
+            alert("Try again :(");
+        }
+        $('#gradingLoaderCtr').addClass("d-none")
+    }
     </script>
 
 {% endblock %}
