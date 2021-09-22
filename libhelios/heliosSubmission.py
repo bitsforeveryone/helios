@@ -29,7 +29,7 @@ class heliosSubmission:
         correct=False
 
         # check for c programs. Make container, compile, check output
-        if(self.challenge["language"] is "C"):
+        if(self.challenge["language"] == "C"):
             return all([
                 self.testC(test["userInput"],test["cmdLineArgs"], test["output"])
                 for test in self.challenge["tests"]])
@@ -42,7 +42,7 @@ class heliosSubmission:
                           f"echo -e '{userin}' > userin.doc && " \
                           "gcc --static submit.c -o submit && " \
                           "chmod +x submit && " \
-                          f"./submit {cmdline} < userin.doc"
+                          f"./submit < userin.doc {cmdline}"
         newContainer = heliosSubmission.dockerClient.containers.run("frolvlad/alpine-gcc",
                                                                     ["/bin/sh", "-c", compileCprogram],
                                                                     detach=True,
