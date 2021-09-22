@@ -14,7 +14,7 @@ $('#submitattempt').click(function () {
     resetAlerts();
     var userSubmission = $("#codeSubmitTextArea").val()
     $('#gradingLoaderCtr').removeClass("d-none")
-    $.post("/submit",
+    $.post("/artemis/submit",
         {
             challenge: currentChallenge,
             submission: userSubmission

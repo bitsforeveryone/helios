@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="maincolumn container rounded mt-5 h-auto d-flex flex-column" >
+<title>Login</title>
+    {# this is specific enough to this page I don't really want to bother to put it in a separate js file#}
+    <script>
+        function showLogin() {
+            document.getElementById("cardLoginPanel").className = "card visible h-auto w-75 align-self-center";
+            document.getElementById("cardWarningBanner").className = "collapse";
+        }
+    </script>
+    {#<div class="align-self-center w-50">#}
+
+    <div class="card text-center h-auto w-50 align-self-center mt-4" id="cardWarningBanner">
+        <div class="card-header">
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Helios</h5>
+            <p class="card-text"></p>
+            <a href="{{ endpoint }}" class="btn btn-primary btnDiscord" id="btnLoginDiscord">Login with Discord</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
