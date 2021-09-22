@@ -61,9 +61,15 @@ def artemis():
 
 @app.route('/auth')
 def authDiscord():
-    authtoken,authtokentype=getToken(request)
-    print(heliosAuthenticate.getUser(authtoken))
+    authtoken=""
+    try:
+        authtoken,authtokentype=heliosAuthenticate.getToken(request)
+    except:
+        abort(405)
+    if not authtoken:
+        abort(405)
 
+    print(heliosAuthenticate.getUser(authtoken))
     return redirect(url_for('artemis'))
 
 @app.route('/test')
@@ -75,15 +81,3 @@ if __name__ == '__main__':
     app.run(ssl_context=('secrets/cert.pem', 'secrets/key.pem'),host="0.0.0.0",port="443")
 
 
-# given a request object, return a token after verifying request is legitimate
-def getToken(request):
-    # request security using state param
-    state = request.args.get("state")
-    if (state not in DISCORD_REQUESTS):
-        abort(405)
-    DISCORD_REQUESTS.remove(state)
-    # now request username, id, and servers
-    tokenType = request.args.get("token_type")
-    token = request.args.get("access_token")
-
-    return (token, tokenType)

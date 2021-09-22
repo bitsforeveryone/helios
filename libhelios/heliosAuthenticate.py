@@ -9,6 +9,19 @@ DISCORD_ENDPOINT = "https://discord.com/api/oauth2/authorize?client_id=889907808
 DISCORD_REQUESTS=[]
 DISCORD_API="https://discordapp.com/api"
 
+# given a request object, return a token after verifying request is legitimate
+def getToken(request):
+    # request security using state param
+    state = request.args.get("state")
+    if (state not in DISCORD_REQUESTS):
+        return False
+    DISCORD_REQUESTS.remove(state)
+    # now request username, id, and servers
+    tokenType = request.args.get("token_type")
+    token = request.args.get("access_token")
+
+    return (token, tokenType)
+
 # given an access token, retrieve basic information
 def getUser(accessToken, accessTokenType="Bearer"):
     headers = {
