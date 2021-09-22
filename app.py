@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 
 import json
 
@@ -47,7 +47,7 @@ def challenges():
 @app.route('/auth')
 def authDiscord():
     print(request.args)
-    return "yay"
+    return redirect(url_for('challenges'))
 
 if __name__ == '__main__':
     app.run(ssl_context=('secrets/cert.pem', 'secrets/key.pem'),host="0.0.0.0",port="443")
