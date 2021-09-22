@@ -10,12 +10,13 @@ DISCORD_REQUESTS=[]
 DISCORD_API="https://discordapp.com/api"
 
 # given a request object, return a token after verifying request is legitimate
-def getToken(request):
+def getToken(request, requestArray):
     # request security using state param
     state = request.args.get("state")
-    if (state not in DISCORD_REQUESTS):
+    print(state,requestArray)
+    if (state not in requestArray):
         return False
-    DISCORD_REQUESTS.remove(state)
+    requestArray.remove(state)
     # now request username, id, and servers
     tokenType = request.args.get("token_type")
     token = request.args.get("access_token")

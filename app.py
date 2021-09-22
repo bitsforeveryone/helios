@@ -63,7 +63,7 @@ def artemis():
 def authDiscord():
     authtoken=""
     try:
-        authtoken,authtokentype=heliosAuthenticate.getToken(request)
+        authtoken,authtokentype=heliosAuthenticate.getToken(request, DISCORD_REQUESTS)
     except:
         abort(405)
     if not authtoken:
