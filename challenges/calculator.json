@@ -8,12 +8,12 @@
     {
       "userInput": "2 4",
       "cmdLineArgs": "",
-      "output": "Enter two numbers: Product = 8.00"
+      "output": "Enter two numbers:\n8"
     },
     {
       "userInput": "2 3",
       "cmdLineArgs": "",
-      "output": "Enter two numbers: Product = 6.00"
+      "output": "Enter two numbers:\n6"
     }
   ]
 }

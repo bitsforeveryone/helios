@@ -16,16 +16,6 @@ secrets=open("secrets/misc")
 SECRETS=json.load(secrets)
 secrets.close()
 
-#
-# @app.route('/')
-# def hello_world():
-#     with open("meep.c","r") as book:
-#         testSubmit= heliosSubmission.heliosSubmission("challenges",
-#                                 heliosChallenge.heliosChallenge.challenges[1],
-#                                 str(book.read()))
-#
-#     return str(testSubmit.check())
-
 @app.route('/submit', methods=['POST'])
 def challengeSubmit():
     # receive challenge submit, grade and return result
@@ -40,11 +30,9 @@ def challengeSubmit():
             testSubmit=heliosSubmission.heliosSubmission("challenges",
                                     thisChal,
                                     request.form["submission"])
-            if(testSubmit.check()):
-                return "Success"
-        # default case is failure
-        return "Failure"
-
+            checkTuple=testSubmit.check()
+            return {"result":checkTuple[0],"response":{"expected":checkTuple[1][0],"received":checkTuple[1][1]}}
+        return {"result":"Failure","response":"Failure"}
 
 
 @app.route('/')
