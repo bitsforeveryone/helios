@@ -2,21 +2,23 @@
 
 import requests
 
-USER_ENDPOINT="https://discordapp.com/api/users/@me"
-REDIRECT_URL="https://helios.c3t.eecs.net/authenticate"
+GET_USER="/users/@me"
+GET_USER_GUILDS="/users/@me/guilds"
 
-
-REQUEST_URL=f"https://discord.com/api/oauth2/authorize?client_id=889907808852656178&redirect_uri={REDIRECT_URL}&response_type=token&scope=identify%20email"
-
-
+DISCORD_ENDPOINT = "https://discord.com/api/oauth2/authorize?client_id=889907808852656178&redirect_uri=https%3A%2F%2Fhelios.c3t.eecs.net%2Fauth&response_type=token&scope=identify%20guilds"
+DISCORD_REQUESTS=[]
+DISCORD_API="https://discordapp.com/api"
 
 # given an access token, retrieve basic information
-def getUser(accessToken):
+def getUser(accessToken, accessTokenType="Bearer"):
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': f'Bearer {accessToken}'
+        'Authorization': f'{accessTokenType} {accessToken}'
     }
 
-    userData=requests.get(USER_ENDPOINT, headers=headers)
+    userData=requests.get(DISCORD_ENDPOINT+GET_USER, headers=headers)
+    userGuilds=requests.get(DISCORD_ENDPOINT+GET_USER_GUILDS, headers=headers)
 
+    print(userGuilds)
+    print(userData)
     return userData

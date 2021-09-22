@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for
+import random
+import string
+
+from flask import Flask, render_template, request, redirect, url_for, session, abort
 
 import json
 
 import challenges.helloWorldC, challenges.calculatorC
-from libhelios import heliosChallenge, heliosSubmission
+from libhelios import heliosChallenge, heliosSubmission, heliosAuthenticate
 
 from challenges import *
 
@@ -14,12 +17,24 @@ heliosChallenge.heliosChallenge.loadChallenges()
 # load secrets
 secrets=open("secrets/misc")
 SECRETS=json.load(secrets)
-DISCORD_ENDPOINT = "https://discord.com/api/oauth2/authorize?client_id=889907808852656178&redirect_uri=https%3A%2F%2Fhelios.c3t.eecs.net%2Fauth&response_type=token&scope=identify%20guilds"
 secrets.close()
+
+DISCORD_ENDPOINT = "https://discord.com/api/oauth2/authorize?client_id=889907808852656178&redirect_uri=https%3A%2F%2Fhelios.c3t.eecs.net%2Fauth&response_type=token&scope=identify%20guilds"
+DISCORD_REQUESTS=[]
+DISCORD_API="https://discordapp.com/api"
 
 @app.route('/')
 def landingPage():
-    return render_template('login.html',endpoint=DISCORD_ENDPOINT)
+    if "user" in session:
+        # TODO: This should go somewhere else
+        return redirect(url_for('artemis'))
+    # otherwise need to actually login. Generate a state string
+    # this is used to ensure login returns are actually those requested by app
+    state=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(16))
+    DISCORD_REQUESTS.append(state)
+
+    thisEndpoint=DISCORD_ENDPOINT+"&state=%s"%state
+    return render_template('login.html',endpoint=thisEndpoint)
 
 @app.route('/artemis/submit', methods=['POST'])
 def challengeSubmit():
@@ -46,12 +61,29 @@ def artemis():
 
 @app.route('/auth')
 def authDiscord():
-    tokenType=request.args.get("token_type")
-    token=request.args.get("access_token")
+    authtoken,authtokentype=getToken(request)
+    print(heliosAuthenticate.getUser(authtoken))
+
     return redirect(url_for('artemis'))
 
 @app.route('/test')
 def test():
-    return str(request.remote_addr)
+    return session["user"]
+
+
 if __name__ == '__main__':
     app.run(ssl_context=('secrets/cert.pem', 'secrets/key.pem'),host="0.0.0.0",port="443")
+
+
+# given a request object, return a token after verifying request is legitimate
+def getToken(request):
+    # request security using state param
+    state = request.args.get("state")
+    if (state not in DISCORD_REQUESTS):
+        abort(405)
+    DISCORD_REQUESTS.remove(state)
+    # now request username, id, and servers
+    tokenType = request.args.get("token_type")
+    token = request.args.get("access_token")
+
+    return (token, tokenType)
