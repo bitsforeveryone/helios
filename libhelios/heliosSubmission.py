@@ -40,9 +40,10 @@ class heliosSubmission:
     def testC(self,userin,cmdline, neededOutput):
         compileCprogram = f"echo '{self.submission}' > submit.c && " \
                           f"echo -e '{userin}' > userin.doc && " \
+                          f"echo -e '#!/bin/sh\n\n./submit {cmdline}' > runscript.sh && " \
                           "gcc --static submit.c -o submit && " \
-                          "chmod +x submit && " \
-                          f"./submit < userin.doc {cmdline}"
+                          "chmod +x submit && chmod +x runscript.sh && " \
+                          f"./runscript.sh < userin.doc"
         newContainer = heliosSubmission.dockerClient.containers.run("frolvlad/alpine-gcc",
                                                                     ["/bin/sh", "-c", compileCprogram],
                                                                     detach=True,
