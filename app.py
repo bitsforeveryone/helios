@@ -41,13 +41,17 @@ def challengeSubmit():
 
 
 @app.route('/artemis')
-def challenges():
+def artemis():
     return render_template('challenges.html', challenges=heliosChallenge.heliosChallenge.challenges)
 
 @app.route('/auth')
 def authDiscord():
-    print(request.args)
-    return redirect(url_for('challenges'))
+    tokenType=request.args.get("token_type")
+    token=request.args.get("access_token")
+    return redirect(url_for('artemis'))
 
+@app.route('/test')
+def test():
+    return str(request.remote_addr)
 if __name__ == '__main__':
     app.run(ssl_context=('secrets/cert.pem', 'secrets/key.pem'),host="0.0.0.0",port="443")
