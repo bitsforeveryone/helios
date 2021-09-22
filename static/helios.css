@@ -44,3 +44,18 @@
   from{ bottom:-100px; opacity:0 }
   to{ bottom:0; opacity:1 }
 }
+
+pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+.codeSample {
+  padding: 5px 5px 5px 5px;
+  background-color: #eeb2b8;
+  color: #4a0f14;
+}

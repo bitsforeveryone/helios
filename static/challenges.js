@@ -37,8 +37,8 @@ function receiveResults(data) {
         if (data["result"]==="Failure") {
             $('#gradingResultAlertFailure').html("<strong>Oops, that's not it</strong>" +
                 "<hr>" +
-                "<p>Expected: </p><pre>"+data["response"]["expected"]+"</pre></p>"+
-                "<p>Received: </p><pre>"+data["response"]["received"]+"</pre></p>")
+                "<p>Expected: </p><pre><div class='codeSample'>"+data["response"]["expected"]+"\n</div></pre></p>"+
+                "<p>Received: </p><pre><div class='codeSample'>"+data["response"]["received"]+"\n</div></pre></p>")
         }
         else if (data["result"]==="Error") {
             $('#gradingResultAlertFailure').html("<strong>Program failed to start</strong>" +
