@@ -39,12 +39,16 @@ def getUser(accessToken, accessTokenType="Bearer"):
         'Content-Type': 'application/json',
         'Authorization': f'{accessTokenType} {accessToken}'
     }
-
     userData=requests.get(DISCORD_API+GET_USER, headers=headers)
     userData=userData.json()
+
+    return userData
+
+def getGuilds(accessToken, accessTokenType="Bearer"):
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'{accessTokenType} {accessToken}'
+    }
     userGuilds=requests.get(DISCORD_API+GET_USER_GUILDS, headers=headers)
     userGuilds=userGuilds.json()
-
-    print(userGuilds)
-    print(userData)
-    return userData
+    return userGuilds

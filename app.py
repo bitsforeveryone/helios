@@ -23,10 +23,13 @@ DISCORD_ENDPOINT=f"https://discord.com/api/oauth2/authorize?client_id={SECRETS['
 
 DISCORD_REQUESTS=[]
 DISCORD_API="https://discordapp.com/api"
+C3T_DISCORD_ID="675737159717617666"
+
+USERS={}
 
 @app.route('/')
 def landingPage():
-    if "user" in session:
+    if "userID" in session:
         # TODO: This should go somewhere else
         return redirect(url_for('artemis'))
     # otherwise need to actually login. Generate a state string
@@ -68,15 +71,46 @@ def authDiscord():
     except Exception as e:
         return str(e)
     if not authtoken:
-        abort(405)
+        abort(403)
 
-    print(authtoken)
-    print(heliosAuthenticate.getUser(authtoken))
+    userData=heliosAuthenticate.getUser(authtoken)
+    userGuilds=heliosAuthenticate.getGuilds(authtoken)
+
+    # iterate over guilds and ensure they belong to C3T guild
+    inGuild=False
+    for guild in userGuilds:
+        if guild["id"] == C3T_DISCORD_ID:
+            inGuild=True
+    if not inGuild:
+        abort(403)
+
+    # now check if user in DB
+    if userData['id'] not in USERS.keys():
+        USERS[userData['id']]={
+            "name":userData['name'],
+            "artemis":{
+                "C":0,
+                "ASM":0
+            },
+            "xp":{
+                "binex": 0,
+                "crypto": 0,
+                "web": 0,
+                "blue": 0,
+                "red": 0,
+            },
+            "competitions":[],
+            "assignment":""
+        }
+    else:
+        session["userID"]=userData['id']
+        session["name"]=userData['name']
+
     return redirect(url_for('artemis'))
 
 @app.route('/test')
 def test():
-    return session["user"]
+    return session["userID"]
 
 
 if __name__ == '__main__':
