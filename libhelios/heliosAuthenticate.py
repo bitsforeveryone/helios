@@ -8,8 +8,7 @@ GET_USER_GUILDS="/users/@me/guilds"
 DISCORD_API="https://discordapp.com/api"
 
 # given a request object, return a token after verifying request is legitimate
-def getToken(request, requestArray):
-    global SECRETS
+def getToken(request, requestArray, secrets):
     # request security using state param
     state = request.args.get("state")
     print(state,requestArray)
@@ -19,8 +18,8 @@ def getToken(request, requestArray):
     requestArray.remove(state)
     code= request.args.get("code")
     data = {
-        'client_id': SECRETS['DISCORD_CLIENT_ID'],
-        'client_secret': SECRETS['DISCORD_CLIENT_SECRETS'],
+        'client_id': secrets['DISCORD_CLIENT_ID'],
+        'client_secret': secrets['DISCORD_CLIENT_SECRETS'],
         'grant_type': 'authorization_code',
         'code': code,
         'redirect_uri': request.base_url
