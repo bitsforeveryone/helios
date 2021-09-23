@@ -88,7 +88,7 @@ def authDiscord():
     # now check if user in DB
     if userData['id'] not in USERS.keys():
         USERS[userData['id']]={
-            "name":userData['name'],
+            "name":userData['username'],
             "artemis":{
                 "C":0,
                 "ASM":0
