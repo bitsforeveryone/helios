@@ -1,0 +1,14 @@
+{
+  "name": "We need to call an Assembly",
+  "points": "10",
+  "prompt": "We're holding a top secret meeting. Let the world know. Probably be polite? Hey, I like that C thing, but assembly is the future.\n(This is x32 ASM)",
+  "language": "ASM32",
+  "prototype": "extern puts\nextern exit\n\nsection .text\nglobal _start\n\n_start:\n\n\n\nsection .data\n    hello db \"Hello World\"",
+  "tests": [
+    {
+      "userInput": "",
+      "cmdLineArgs": "",
+      "output": "Hello World\n"
+    }
+  ]
+}

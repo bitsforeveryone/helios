@@ -28,22 +28,27 @@ class heliosSubmission:
     # check submission by passing code to a container and checking against challenge output
     def check(self,db):
         correct=False
-        print(self.challenge)
+        testResult=None
         # check for c programs. Make container, compile, check output
         if(self.challenge["language"] == "C"):
             testResult= self.testC(self.submission,self.challenge["tests"])
+        if (self.challenge["language"] == "ASM32"):
+            testResult = self.testASM32(self.submission, self.challenge["tests"])
         if (self.challenge["language"] == "ASM64"):
             testResult = self.testASM64(self.submission, self.challenge["tests"])
-        if testResult[0] == "Success":
-            db.submissions.replace_one(
-                {"challenge": self.challenge["_id"],
-                 "userID": self.userID},
-                {
-                    "challenge": self.challenge["_id"],
-                    "userID": self.userID,
-                    "attempt": self.submission,
-                    "language": self.challenge["language"]
-                }, upsert=True)
+        try:
+            if testResult[0] == "Success":
+                db.submissions.replace_one(
+                    {"challenge": self.challenge["_id"],
+                     "userID": self.userID},
+                    {
+                        "challenge": self.challenge["_id"],
+                        "userID": self.userID,
+                        "attempt": self.submission,
+                        "language": self.challenge["language"]
+                    }, upsert=True)
+        except KeyError:
+            pass
         return testResult
 
 
@@ -102,7 +107,7 @@ class heliosSubmission:
     def testASM64(submission,tests):
         compileASM64program = f"echo '{submission}' > submit.asm && " \
                             f"nasm -f elf64 -o submit.o submit.asm && " \
-                            f"ld -o submit submit.o && " \
+                            f"ld -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o submit -lc submit.o && " \
                             "chmod +x submit"
 
         testASM64program=[]
@@ -116,8 +121,6 @@ class heliosSubmission:
 
         testASM64program= " && echo 'BREAK' && ".join(testASM64program)
         finalCommand=compileASM64program+" && "+testASM64program
-
-        print(finalCommand)
 
         newContainer = heliosSubmission.dockerClient.containers.run("emilienmottet/nasm",
                                                         ["/bin/bash", "-c", finalCommand],
@@ -145,4 +148,43 @@ class heliosSubmission:
 
     @staticmethod
     def testASM32(submission, tests):
-        pass
+        compileASM32program = f"echo '{submission}' > submit.asm && " \
+                              f"nasm -f elf32 -o submit.o submit.asm && " \
+                              f"ld -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o submit -lc submit.o && " \
+                              "chmod +x submit"
+
+        testASM32program = []
+        for test in tests:
+            # create the userin/shell script. Also communicate BREAK between outputs..
+            testASM32program.append(f"echo -e '{test['userInput']}' > userin.doc && "
+                                    f"echo -e '#!/bin/sh\n\n./submit {test['cmdLineArgs']}' > runscript.sh && "
+                                    f"chmod +x runscript.sh && "
+                                    f"./runscript.sh < userin.doc"
+                                    )
+
+        testASM32program = " && echo 'BREAK' && ".join(testASM32program)
+        finalCommand = compileASM32program + " && " + testASM32program
+
+        newContainer = heliosSubmission.dockerClient.containers.run("emilienmottet/nasm",
+                                                                    ["/bin/bash", "-c", finalCommand],
+                                                                    detach=True,
+                                                                    ports={"5000/tcp": "5000"}
+                                                                    )
+        # sleep to allow compilation before container removal
+        sleep(3)
+        # split output on BREAK to get distinct lines
+        programOutput = newContainer.logs().decode('utf-8').split('BREAK\n')
+        # clean up
+        newContainer.stop()
+        newContainer.remove()
+
+        # for each test, compare test expected output with actual output
+        if len(programOutput) == len(programOutput):
+            for index, test in enumerate(tests):
+                if test['output'] == programOutput[index]:
+                    continue
+                else:
+                    return ("Failure", (test['output'], programOutput[index]))
+            return ("Success", (0, 0))
+        else:
+            return ("Error", (0, programOutput[0]))
