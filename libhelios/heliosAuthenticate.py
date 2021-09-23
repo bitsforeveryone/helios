@@ -9,6 +9,7 @@ DISCORD_API="https://discordapp.com/api"
 
 # given a request object, return a token after verifying request is legitimate
 def getToken(request, requestArray):
+    global SECRETS
     # request security using state param
     state = request.args.get("state")
     print(state,requestArray)
