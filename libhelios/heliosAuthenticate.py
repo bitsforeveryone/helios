@@ -5,6 +5,7 @@ import requests
 GET_USER="/users/@me"
 GET_USER_GUILDS="/users/@me/guilds"
 
+
 DISCORD_API="https://discordapp.com/api"
 
 # given a request object, return a token after verifying request is legitimate
@@ -19,7 +20,7 @@ def getToken(request, requestArray, secrets):
     code= request.args.get("code")
     data = {
         'client_id': secrets['DISCORD_CLIENT_ID'],
-        'client_secret': secrets['DISCORD_CLIENT_SECRETS'],
+        'client_secret': secrets['DISCORD_CLIENT_SECRET'],
         'grant_type': 'authorization_code',
         'code': code,
         'redirect_uri': request.base_url
@@ -39,8 +40,8 @@ def getUser(accessToken, accessTokenType="Bearer"):
         'Authorization': f'{accessTokenType} {accessToken}'
     }
 
-    userData=requests.get(DISCORD_ENDPOINT+GET_USER, headers=headers)
-    userGuilds=requests.get(DISCORD_ENDPOINT+GET_USER_GUILDS, headers=headers)
+    userData=requests.get(DISCORD_API+GET_USER, headers=headers)
+    userGuilds=requests.get(DISCORD_API+GET_USER_GUILDS, headers=headers)
 
     print(userGuilds)
     print(userData)
