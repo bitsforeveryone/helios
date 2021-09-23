@@ -19,6 +19,8 @@ secrets=open("secrets/misc")
 SECRETS=json.load(secrets)
 secrets.close()
 
+app.secret_key=SECRETS["FLASK_KEY"]
+
 DISCORD_ENDPOINT=f"https://discord.com/api/oauth2/authorize?client_id={SECRETS['DISCORD_CLIENT_ID']}&redirect_uri=https%3A%2F%2Fhelios.c3t.eecs.net%2Fauth&response_type=code&scope=identify%20guilds"
 
 DISCORD_REQUESTS=[]
