@@ -74,6 +74,7 @@ def authDiscord():
         abort(403)
 
     userData=heliosAuthenticate.getUser(authtoken)
+
     userGuilds=heliosAuthenticate.getGuilds(authtoken)
 
     # iterate over guilds and ensure they belong to C3T guild
@@ -102,9 +103,11 @@ def authDiscord():
             "competitions":[],
             "assignment":""
         }
+        session["userID"]=userData['id']
+        session["name"]=userData['username']
     else:
         session["userID"]=userData['id']
-        session["name"]=userData['name']
+        session["name"]=userData['username']
 
     return redirect(url_for('artemis'))
 
