@@ -82,6 +82,8 @@ def artemis():
     # get challenges applicable to context
     language=request.args.get("language")
     langChallenges=[ chal for chal in mongoArtemis.db.challenges.find({"language":language})]
+    # sort challenges
+    langChallenges=sorted(langChallenges,key=lambda challenge: int(challenge["points"]))
     langSubmissions={}
     for sub in mongoArtemis.db.submissions.find({"userID": session["userID"], "language": language}):
         langSubmissions[sub["challenge"]]=sub

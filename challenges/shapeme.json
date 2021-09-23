@@ -1,6 +1,6 @@
 {
   "name": "Shapeme",
-  "points": "10",
+  "points": "30",
   "prompt": "I have a RECTANGULAR PRISM, can you help me measure it? I'll give you the width and length up front, but I'll probably have to give you the height sometime later. Contractors you know.",
   "language": "C",
   "prototype": "#include <stdio.h>\n\nint main() {\n\n\n\n}",

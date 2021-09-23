@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+{% block head %}{% endblock %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -62,7 +63,7 @@
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mr-auto">
                                 <li class="nav-item active">
-                                    <a class="nav-link fs-4" href="#">Artemis</a>
+                                    <a class="nav-link fs-4" href="/artemis">Artemis</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="#"></a>
@@ -108,7 +109,7 @@
         {% block content %}{% endblock content %}
 
         <footer class="pt-3 mt-4 text-muted border-top">
-            C3T Prototype &copy; 2021
+            C3T Artemis Prototype &copy; 2021
         </footer>
     </div>
 </main>
