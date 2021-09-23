@@ -14,12 +14,23 @@ def getToken(request, requestArray):
     print(state,requestArray)
     if (state not in requestArray):
         return False
+    # remove now, invalid
     requestArray.remove(state)
-    # now request username, id, and servers
-    tokenType = request.args.get("token_type")
-    token = request.args.get("access_token")
+    code= request.args.get("code")
+    data = {
+        'client_id': SECRETS['DISCORD_CLIENT_ID'],
+        'client_secret': SECRETS['DISCORD_CLIENT_SECRETS'],
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': request.base_url
+    }
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    r = requests.post('%s/oauth2/token' % DISCORD_API, data=data, headers=headers)
+    r.raise_for_status()
 
-    return (token, tokenType)
+    return (r.json()["access_token"], r.json()["token_type"])
 
 # given an access token, retrieve basic information
 def getUser(accessToken, accessTokenType="Bearer"):
