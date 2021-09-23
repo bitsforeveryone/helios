@@ -14,7 +14,7 @@ class heliosSubmission:
 
 
     def __init__(self, user, challenge, submission : str):
-        self.user=user
+        self.userID=user
         self.challenge=challenge
         self.submission=submission
 
@@ -25,12 +25,24 @@ class heliosSubmission:
 
 
     # check submission by passing code to a container and checking against challenge output
-    def check(self):
+    def check(self,db):
         correct=False
-
+        print(self.challenge)
         # check for c programs. Make container, compile, check output
         if(self.challenge["language"] == "C"):
-            return self.testC(self.submission,self.challenge["tests"])
+            testResult= self.testC(self.submission,self.challenge["tests"])
+            print(testResult[0])
+            if testResult[0]=="Success":
+                db.submissions.replace_one(
+                    {"challenge":self.challenge["_id"],
+                     "userID": self.userID},
+                    {
+                    "challenge":self.challenge["_id"],
+                    "userID":self.userID,
+                    "attempt":self.submission,
+                    "language":self.challenge["language"]
+                }, upsert=True)
+            return testResult
 
 
 

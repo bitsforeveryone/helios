@@ -4,6 +4,8 @@
 import json
 import os
 
+from bson import ObjectId
+
 CHALLENGES_DIR="challenges"
 
 class heliosChallenge:
@@ -21,13 +23,23 @@ class heliosChallenge:
 
     # load challenges from challenges folder
     @staticmethod
-    def loadChallenges():
+    def loadChallenges(db):
         # change dir
         programDir=os.getcwd()
         os.chdir(CHALLENGES_DIR)
         for file in os.listdir():
             if file.endswith(".json"):
-                fp=open(file)
-                heliosChallenge.challenges.append(json.load(fp))
-                fp.close()
+                # check if in database
+                chal=None
+                try:
+                    with open(file) as fp:
+                        chal=json.load(fp)
+                except:
+                    print("Could not load %s"%file)
+                    continue
+                # thisChal=db.challenges.find({"name":chal["name"]})
+                newChal=db.challenges.update_one({"name":chal["name"]},{"$set":chal},upsert=True)
+                # if(thisChal!=None) {
+                #     db.challenges.update({"name":chal["name"]},{"$set":{"_id":ObjectId(thisChal["_id"])}})
+                # }
         os.chdir(programDir)

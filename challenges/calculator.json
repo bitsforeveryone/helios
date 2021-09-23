@@ -8,12 +8,12 @@
     {
       "userInput": "2 4",
       "cmdLineArgs": "",
-      "output": "Enter two numbers:\n8"
+      "output": "Enter two numbers:\n8\n"
     },
     {
       "userInput": "2 3",
       "cmdLineArgs": "",
-      "output": "Enter two numbers:\n6"
+      "output": "Enter two numbers:\n6\n"
     }
   ]
 }

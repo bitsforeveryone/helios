@@ -7,16 +7,23 @@
 
 {% block content %}
     {% for challenge in challenges %}
-
-        <div class="p-3 mb-4 bg-light rounded-3 border">
+        <div class="{% if submissions[challenge["_id"]] %}alert-success{% else %}bg-light{% endif %} p-3 mb-4 rounded-3 border ">
             <div class="container-fluid py-5">
                 <h1 class="display-5 fw-bold">{{ challenge["name"] }} ({{ challenge["points"] }})</h1>
                 <p class="col-md-8 fs-4">{{ challenge["prompt"] }}</p>
                 <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#challengeAttemptModal"
                         type="button"
                         data-chalname="{{ challenge  ["name"] }}"
-                        data-chalprototype="{{ challenge["prototype"] }}"
-                        data-chaldesc="{{ challenge["prompt"] }}">Attempt
+                        data-chalID="{{ challenge["_id"] }}"
+                        data-chaldesc="{{ challenge["prompt"] }}"
+                        {% if submissions[challenge["_id"]] %}
+                        data-chalprototype="{{ submissions[challenge["_id"]]["attempt"] }}
+                            ">Complete!
+                        {% else %}
+                            data-chalprototype="{{ challenge["prototype"] }}"
+                            ">Attempt
+                        {% endif %}
+
                 </button>
             </div>
         </div>

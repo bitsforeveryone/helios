@@ -1,19 +1,32 @@
 import random
 import string
 
+from bson import ObjectId
 from flask import Flask, render_template, request, redirect, url_for, session, abort
 
 import json
 
-import challenges.helloWorldC, challenges.calculatorC
+from flask_pymongo import PyMongo
+
 from libhelios import heliosChallenge, heliosSubmission, heliosAuthenticate
 
 from challenges import *
 
 app = Flask(__name__)
 
-# load challenges
-heliosChallenge.heliosChallenge.loadChallenges()
+mongoHelios = PyMongo(app, uri="mongodb://localhost:27017/helios")
+mongoArtemis = PyMongo(app, uri="mongodb://localhost:27017/artemis")
+
+# load/update challenges into DB
+heliosChallenge.heliosChallenge.loadChallenges(mongoArtemis.db)
+
+
+for object in mongoArtemis.db.submissions.find({}):
+    print(object)
+
+for object in mongoHelios.db.users.find({}):
+    print(object)
+
 # load secrets from file
 secrets=open("secrets/misc")
 SECRETS=json.load(secrets)
@@ -27,8 +40,8 @@ DISCORD_REQUESTS=[]
 DISCORD_API="https://discordapp.com/api"
 C3T_DISCORD_ID="675737159717617666"
 
-USERS={}
-ARTEMIS_SUBMISSIONS=[]
+USERS=mongoHelios.db.users
+ARTEMIS_SUBMISSIONS=mongoArtemis.db.submissions
 
 @app.route('/')
 def login():
@@ -44,27 +57,36 @@ def login():
     return render_template('login.html',endpoint=thisEndpoint)
 
 @app.route('/artemis/submit', methods=['POST'])
+# TODO: Move somewhere else
 def challengeSubmit():
     # receive challenge submit, grade and return result
     if request.method=='POST':
         # find challenge
-        thisChal=None
-        for chal in heliosChallenge.heliosChallenge.challenges:
-            if chal["name"] == request.form["challenge"]:
-                thisChal=chal
 
+        thisChal=mongoArtemis.db.challenges.find_one({"_id":ObjectId(request.form["challenge"])})
+        print(thisChal["_id"])
+        # create submission obj with user, challenge, and the code given and check
         if(thisChal):
-            testSubmit=heliosSubmission.heliosSubmission("challenges",
+            testSubmit=heliosSubmission.heliosSubmission(session["userID"],
                                     thisChal,
                                     request.form["submission"])
-            checkTuple=testSubmit.check()
+            checkTuple=testSubmit.check(mongoArtemis.db)
             return {"result":checkTuple[0],"response":{"expected":checkTuple[1][0],"received":checkTuple[1][1]}}
         return {"result":"Failure","response":"Failure"}
 
 
 @app.route('/artemis')
 def artemis():
-    return render_template('challenges.html', session=session, challenges=heliosChallenge.heliosChallenge.challenges)
+    if 'userID' not in session:
+        abort(403)
+    # get challenges applicable to context
+    language=request.args.get("language")
+    langChallenges=[ chal for chal in mongoArtemis.db.challenges.find({"language":language})]
+    langSubmissions={}
+    for sub in mongoArtemis.db.submissions.find({"userID": session["userID"], "language": language}):
+        langSubmissions[sub["challenge"]]=sub
+
+    return render_template('challenges.html', session=session, challenges=langChallenges, submissions=langSubmissions)
 
 @app.route('/auth')
 def authDiscord():
@@ -90,8 +112,10 @@ def authDiscord():
         abort(403)
 
     # now check if user in DB
-    if userData['id'] not in USERS.keys():
-        USERS[userData['id']]={
+
+    if USERS.find_one({'userID':userData['id']}) == None:
+        USERS.insert_one({
+            'userID': userData['id'],
             "name":userData['username'],
             "artemis":{
                 "C":0,
@@ -105,8 +129,14 @@ def authDiscord():
                 "red": 0,
             },
             "competitions":[],
-            "assignment":""
-        }
+            "assignment":"",
+            "profile": {
+                "age":"",
+                "email":"",
+                "summary":"",
+                "realname":""
+            }
+        })
         session["userID"]=userData['id']
         session["name"]=userData['username']
     else:

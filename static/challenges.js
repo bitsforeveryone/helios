@@ -1,9 +1,11 @@
 var currentChallenge = ""
+var challengeID = ""
 $('#challengeAttemptModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget) // Button that triggered the modal
     currentChallenge = button.data('chalname') // Extract info from data-* attributes
     var challengePrototype = button.data('chalprototype')
     var challengeDesc = button.data('chaldesc')
+    challengeID = button.data('chalid')
     var modal = $(this)
     modal.find('#challengeAttemptTitle').text('Attempting: ' + currentChallenge)
     modal.find('#codeSubmitTextArea').val(challengePrototype)
@@ -16,7 +18,7 @@ $('#submitattempt').click(function () {
     $('#gradingLoaderCtr').removeClass("d-none")
     $.post("/artemis/submit",
         {
-            challenge: currentChallenge,
+            challenge: challengeID,
             submission: userSubmission
         },
         function (data) { //success callback
