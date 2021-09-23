@@ -88,6 +88,24 @@ def artemis():
 
     return render_template('challenges.html', session=session, challenges=langChallenges, submissions=langSubmissions)
 
+@app.route('/artemis/scoreboard')
+def artemisScore():
+    # get all current users, calculate score, plug into dictionary, render scoreboard
+    boardDict={}
+    for submission in mongoArtemis.db.submissions.find({}):
+        user=mongoHelios.db.users.find_one({"userID":submission["userID"]})
+        if(user):
+            if user["name"] not in boardDict.keys():
+                boardDict[user["name"]]=0
+            challenge=mongoArtemis.db.challenges.find_one({"_id":submission["challenge"]})
+            if(challenge):
+                boardDict[user["name"]]+=int(challenge["points"])
+        else:
+            continue
+        # sort
+        boardDict=dict(sorted(boardDict.items(), key=lambda x: x[1], reverse=True))
+    return render_template('scoreboard.html',boardDict=boardDict)
+
 @app.route('/auth')
 def authDiscord():
     authtoken=""

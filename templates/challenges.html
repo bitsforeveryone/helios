@@ -4,6 +4,9 @@
 {% block username %}
     {{ session["name"] }}
 {% endblock username %}
+{% block title %}
+    Challenges
+{% endblock title %}
 
 {% block content %}
     {% for challenge in challenges %}

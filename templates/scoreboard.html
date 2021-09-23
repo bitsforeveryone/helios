@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+# push in username
+{% block username %}
+    {{ session["name"] }}
+{% endblock username %}
+{% block title %}
+    Scoreboard
+{% endblock title %}
+
+{% block content %}
+    <div class="container w-75 align-self-center">
+    <ul class="list-group">
+  <li class="list-group-item list-group-item-dark d-flex justify-content-between align-items-center">Member<span>Score</span></li>
+        {% for member,score in boardDict.items() %}
+  <li class="list-group-item d-flex justify-content-between align-items-center">{{ member }}<span>{{ score }}</span></li>
+        {% endfor %}
+</ul>
+    </div>
+{% endblock content %}
