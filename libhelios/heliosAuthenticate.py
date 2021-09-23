@@ -41,7 +41,9 @@ def getUser(accessToken, accessTokenType="Bearer"):
     }
 
     userData=requests.get(DISCORD_API+GET_USER, headers=headers)
+    userData=userData.json()
     userGuilds=requests.get(DISCORD_API+GET_USER_GUILDS, headers=headers)
+    userGuilds=userGuilds.json()
 
     print(userGuilds)
     print(userData)
