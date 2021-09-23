@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="30c16395-a400-43fe-81f6-468eb738e365" name="helios]" url="">
+        <fileTransfer rootFolder="/home/c3t" accessType="SFTP" host="helios.c3t.eecs.net" port="22" sshConfigId="8094037d-cb49-4caa-882f-29e2cfc8153b" sshConfig="c3t@helios.c3t.eecs.net:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

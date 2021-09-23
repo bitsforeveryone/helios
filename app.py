@@ -28,9 +28,10 @@ DISCORD_API="https://discordapp.com/api"
 C3T_DISCORD_ID="675737159717617666"
 
 USERS={}
+ARTEMIS_SUBMISSIONS=[]
 
 @app.route('/')
-def landingPage():
+def login():
     if "userID" in session:
         # TODO: This should go somewhere else
         return redirect(url_for('artemis'))
@@ -63,7 +64,7 @@ def challengeSubmit():
 
 @app.route('/artemis')
 def artemis():
-    return render_template('challenges.html', challenges=heliosChallenge.heliosChallenge.challenges)
+    return render_template('challenges.html', session=session, challenges=heliosChallenge.heliosChallenge.challenges)
 
 @app.route('/auth')
 def authDiscord():
@@ -85,6 +86,7 @@ def authDiscord():
         if guild["id"] == C3T_DISCORD_ID:
             inGuild=True
     if not inGuild:
+        print("User not in C3T Discord tried to join.")
         abort(403)
 
     # now check if user in DB
@@ -117,8 +119,14 @@ def authDiscord():
 def test():
     return session["userID"]
 
+@app.route('/logout')
+def logout():
+    session.pop('userID', None)
+    session.pop('username',None)
+    return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
-    app.run(ssl_context=('secrets/cert.pem', 'secrets/key.pem'),host="0.0.0.0",port="443")
+    app.run(debug=True,ssl_context=('secrets/cert.pem', 'secrets/key.pem'),host="0.0.0.0",port="443")
 
 

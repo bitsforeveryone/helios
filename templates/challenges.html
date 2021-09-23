@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+# push in username
+{% block username %}
+    {{ session["name"] }}
+{% endblock username %}
+
 {% block content %}
     {% for challenge in challenges %}
 
