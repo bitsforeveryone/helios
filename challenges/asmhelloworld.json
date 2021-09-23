@@ -1,0 +1,14 @@
+{
+  "name": "We need to call an Assembly",
+  "points": "20",
+  "prompt": "We're holding a top secret meeting. Let the world know. Probably be polite? Hey, I like that C thing, but assembly is the future.\n(This is x64 ASM)",
+  "language": "ASM64",
+  "prototype": "section .text\n\nglobal _start\n\n_start\n\n\n\n\nsection .data\n    hello db \"Hello World\", 0xa\nhelloLen equ $-hello\n",
+  "tests": [
+    {
+      "userInput": "",
+      "cmdLineArgs": "",
+      "output": "Hello World\n"
+    }
+  ]
+}

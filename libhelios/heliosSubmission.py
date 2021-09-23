@@ -22,6 +22,7 @@ class heliosSubmission:
         if heliosSubmission.dockerClient is None:
             heliosSubmission.dockerClient=docker.from_env()
             heliosSubmission.dockerClient.images.pull("frolvlad/alpine-gcc")
+            heliosSubmission.dockerClient.images.pull("emilienmottet/nasm")
 
 
     # check submission by passing code to a container and checking against challenge output
@@ -31,18 +32,19 @@ class heliosSubmission:
         # check for c programs. Make container, compile, check output
         if(self.challenge["language"] == "C"):
             testResult= self.testC(self.submission,self.challenge["tests"])
-            print(testResult[0])
-            if testResult[0]=="Success":
-                db.submissions.replace_one(
-                    {"challenge":self.challenge["_id"],
-                     "userID": self.userID},
-                    {
-                    "challenge":self.challenge["_id"],
-                    "userID":self.userID,
-                    "attempt":self.submission,
-                    "language":self.challenge["language"]
+        if (self.challenge["language"] == "ASM64"):
+            testResult = self.testASM64(self.submission, self.challenge["tests"])
+        if testResult[0] == "Success":
+            db.submissions.replace_one(
+                {"challenge": self.challenge["_id"],
+                 "userID": self.userID},
+                {
+                    "challenge": self.challenge["_id"],
+                    "userID": self.userID,
+                    "attempt": self.submission,
+                    "language": self.challenge["language"]
                 }, upsert=True)
-            return testResult
+        return testResult
 
 
 
@@ -95,3 +97,52 @@ class heliosSubmission:
             return ("Success",(0,0))
         else:
             return ("Error",(0,programOutput[0]))
+
+    @staticmethod
+    def testASM64(submission,tests):
+        compileASM64program = f"echo '{submission}' > submit.asm && " \
+                            f"nasm -f elf64 -o submit.o submit.asm && " \
+                            f"ld -o submit submit.o && " \
+                            "chmod +x submit"
+
+        testASM64program=[]
+        for test in tests:
+            # create the userin/shell script. Also communicate BREAK between outputs..
+            testASM64program.append(f"echo -e '{ test['userInput'] }' > userin.doc && "
+                                f"echo -e '#!/bin/sh\n\n./submit { test['cmdLineArgs'] }' > runscript.sh && "
+                                f"chmod +x runscript.sh && "
+                                f"./runscript.sh < userin.doc"
+                                )
+
+        testASM64program= " && echo 'BREAK' && ".join(testASM64program)
+        finalCommand=compileASM64program+" && "+testASM64program
+
+        print(finalCommand)
+
+        newContainer = heliosSubmission.dockerClient.containers.run("emilienmottet/nasm",
+                                                        ["/bin/bash", "-c", finalCommand],
+                                                        detach=True,
+                                                        ports={"5000/tcp": "5000"}
+                                                        )
+        # sleep to allow compilation before container removal
+        sleep(3)
+        # split output on BREAK to get distinct lines
+        programOutput = newContainer.logs().decode('utf-8').split('BREAK\n')
+        # clean up
+        newContainer.stop()
+        newContainer.remove()
+
+        # for each test, compare test expected output with actual output
+        if len(programOutput)==len(programOutput):
+            for index,test in enumerate(tests):
+                if test['output']==programOutput[index]:
+                    continue
+                else:
+                    return("Failure",(test['output'],programOutput[index]))
+            return ("Success",(0,0))
+        else:
+            return ("Error",(0,programOutput[0]))
+
+    @staticmethod
+    def testASM32(submission, tests):
+        pass
