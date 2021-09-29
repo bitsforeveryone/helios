@@ -1,9 +1,9 @@
 {
   "name": "Calcul8r",
   "points": "20",
-  "prompt": "I have two numbers that need to be...combined somehow.",
+  "prompt": "I have two numbers that need to be...combined somehow. I want the answer to be more than the sum of its parts. Something like a...product? Please ask me for the numbers, I'll let you know when I'm ready. Don't worry, I'll be sure to space them out :)",
   "language": "C",
-  "prototype": "#include <stdio.h>\n\nint main() {\n\n\n\n}",
+  "prototype": "#include <stdio.h>\n\nint main() {\n\n\nchar format[]=\"%i %i\";\n\nchar prompt[]=\"Enter two numbers:\\n\";\n\n\n\n}",
   "tests": [
     {
       "userInput": "2 4",

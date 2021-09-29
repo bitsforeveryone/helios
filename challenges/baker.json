@@ -1,0 +1,25 @@
+{
+  "name": "A Little Bit of Baking",
+  "points": "35",
+  "prompt": "You just can't find good help these days. The baker that works for the estate suddenly quit, and all he left was this incomplete app on how to bake a cake. I'll never recover financially from this. Maybe you can get something useful out of the app though?",
+
+  "language": "C",
+  "prototype": "#include <stdio.h>\n#include <stdlib.h>\n\nint main ( int argc, char *argv[])\n{\n\nchar format[]=\"%? %?\";\nchar response[]=\"You are in the %s quadrant\\n\";\n\n\n\n}",
+  "tests": [
+    {
+      "userInput": "10 -4",
+      "cmdLineArgs": "",
+      "output": "You are in the 4th quadrant\n"
+    },
+    {
+      "userInput": "-25 -86",
+      "cmdLineArgs": "",
+      "output": "You are in the 3rd quadrant\n"
+    },
+    {
+      "userInput": "12 15",
+      "cmdLineArgs": "",
+      "output": "You are in the 1st quadrant\n"
+    }
+  ]
+}

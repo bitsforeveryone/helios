@@ -1,0 +1,29 @@
+{
+  "name": "Human Thermostat",
+  "points": "25",
+  "prompt": "Is it hot? Is it cold? Inquiring minds want to know. Name, mine. But there are so many places. Tell you what, I'm going to tell you whether I'm in New York, London, or Antarctica at the start. Then I'll tell you later what the thermostat says. 50+ degrees is HOT for Antarctica, but 80+ degrees is HOT for New York. And in London anything below 60 degrees is considered COLD. Tell me whether it's HOT or COLD outside.",
+  "language": "C",
+  "prototype": "#include <stdio.h>\n#include <stdlib.h>\n\nint main ( int argc, char *argv[])\n{\n\nchar format[]=\"It is %i degrees here.\\n\";\n\n\n\n}",
+  "tests": [
+    {
+      "userInput": "It is 70 degrees here.\n",
+      "cmdLineArgs": "London",
+      "output": "HOT\n"
+    },
+    {
+      "userInput": "It is 20 degrees here.",
+      "cmdLineArgs": "Antarctica",
+      "output": "COLD\n"
+    },
+    {
+      "userInput": "It is 90 degrees here.",
+      "cmdLineArgs": "Antarctica",
+      "output": "HOT\n"
+    },
+    {
+      "userInput": "It is 50 degrees here.",
+      "cmdLineArgs": "New York",
+      "output": "COLD\n"
+    }
+  ]
+}

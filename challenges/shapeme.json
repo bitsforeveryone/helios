@@ -1,9 +1,9 @@
 {
   "name": "Shapeme",
   "points": "30",
-  "prompt": "I have a RECTANGULAR PRISM, can you help me measure it? I'll give you the width and length up front, but I'll probably have to give you the height sometime later. Contractors you know.",
+  "prompt": "I have a RECTANGULAR PRISM, can you help me measure it? I'll give you the width and length up front, but I'll probably have to give you the height sometime later. Contractors you know. My last developer quit on me, see what you can do.",
   "language": "C",
-  "prototype": "#include <stdio.h>\n\nint main() {\n\n\n\n}",
+  "prototype": "#include <stdio.h>\n#include <stdlib.h>\n\nint main ( int argc, char *argv[])\n{\n\n???\n\nscanf(\"%i\", &height);\nprintf(\"The volume of the box is %i\\n\", ???);\n\n}",
   "tests": [
     {
       "userInput": "10",

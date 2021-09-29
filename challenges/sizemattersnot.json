@@ -1,0 +1,14 @@
+{
+  "name": "Size Matters Not",
+  "points": "25",
+  "prompt": "So this little green alien started talking about politics, but now I'm trying to download more RAM and I need to know the exact sizes of the variables in this place to know how much to get. Give me int, char, float, and then double",
+  "language": "C",
+  "prototype": "#include <stdio.h>\n\nint main ( int argc, char *argv[])\n{\n\n//https://www.tutorialspoint.com/format-specifiers-in-c\n\nchar response[]=\"The size of a %s in C is %? bytes\\n\";\n\n\n\n}",
+  "tests": [
+    {
+      "userInput": "",
+      "cmdLineArgs": "",
+      "output": "The size of a int in C is 4 bytes\nThe size of a char in C is 1 bytes\nThe size of a float in C is 4 bytes\nThe size of a double in C is 8 bytes\n"
+    }
+  ]
+}

@@ -13,7 +13,7 @@
         <div class="{% if submissions[challenge["_id"]] %}alert-success{% else %}bg-light{% endif %} p-3 mb-4 rounded-3 border ">
             <div class="container-fluid py-5">
                 <h1 class="display-5 fw-bold">{{ challenge["name"] }} ({{ challenge["points"] }})</h1>
-                <p class="col-md-8 fs-4">{{ challenge["prompt"] }}</p>
+{#                <p class="col-md-8 fs-4">{{ challenge["prompt"] }}</p>#}
                 <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#challengeAttemptModal"
                         type="button"
                         data-chalname="{{ challenge  ["name"] }}"

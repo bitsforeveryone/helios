@@ -1,0 +1,14 @@
+{
+  "name": "Fruit L00ps",
+  "points": "15",
+  "prompt": "I love cereal. Do you like it too? Tell me 'I love cereal' 60 times and I might just be convinced",
+  "language": "C",
+  "prototype": "#include <stdio.h>\n\nint main() {\n\n\n\n}",
+  "tests": [
+    {
+      "userInput": "",
+      "cmdLineArgs": "",
+      "output": "I love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\nI love cereal\n"
+    }
+  ]
+}
