@@ -1,0 +1,4 @@
+bson
+flask
+flask_pymongo
+docker
