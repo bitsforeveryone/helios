@@ -1,3 +1,4 @@
 *.pyc
 secrets*
-_
+venv
+__pycache__
