@@ -42,6 +42,7 @@ DISCORD_API="https://discordapp.com/api"
 C3T_DISCORD_ID="675737159717617666"
 
 USERS=mongoHelios.db.users
+RANKFACTS=mongoHelios.db.rankFacts
 ARTEMIS_SUBMISSIONS=mongoArtemis.db.submissions
 
 @app.route('/')
@@ -155,7 +156,8 @@ def authDiscord():
                 "age":"",
                 "email":"",
                 "summary":"",
-                "realname":""
+                "realname":"",
+                "profilePic":""
             }
         })
         session["userID"]=userData['id']
@@ -169,6 +171,21 @@ def authDiscord():
 @app.route('/test')
 def test():
     return session["userID"]
+
+def getRankFacts():
+    rankFacts={}
+    for record in RANKFACTS.find({},{'_id': 0}):
+        factName=list(record.keys())[0]
+        rankFacts[factName]=record[factName]
+    return rankFacts
+
+# profile page
+@app.route('/profile')
+def profile():
+    rankFacts=getRankFacts()
+    profileDict=USERS.find_one({'userID':session['userID']})
+    return render_template('profile.html',session=session, profile=profileDict, rankFacts=rankFacts)
+
 
 @app.route('/logout')
 def logout():

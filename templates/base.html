@@ -35,10 +35,11 @@
 
 
 </head>
+
 <body>
 
 <main>
-    <div class="container py-4">
+    <div class="container py-4 h-100">
         <header class="pb-3 mb-4 border-bottom">
             <div href="/" class="row align-items-center text-dark text-decoration-none">
                 <div class="col-auto ">
@@ -63,26 +64,25 @@
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mr-auto">
                                 <li class="nav-item active">
-                                    <a class="nav-link fs-4" href="/artemis">Artemis</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#"></a>
-                                </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link fs-4 dropdown-toggle" href="#" id="navbarChallengesDropdown"
-                                       role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Challenges
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarChallengesDropdown">
-                                        <a class="dropdown-item" href="/artemis?language=C">C</a>
-{#                                        <a class="dropdown-item" href="/artemis?language=ASM32">ASM(32-bit)</a>#}
-                                        <a class="dropdown-item" href="/artemis?language=ASM64">ASM</a>
-                                    </div>
-                                </li>
+                                    <a class="nav-link fs-4" href="/profile">Profile</a>
                                 </li>
                                     <li class="nav-item active">
-                                    <a class="nav-link fs-4" href="/artemis/scoreboard">Scoreboard</a>
+                                    <a class="nav-link fs-4" href="/writeups">Writeups</a>
                                 </li>
+<!--                                <li class="nav-item dropdown">-->
+<!--                                    <a class="nav-link fs-4 dropdown-toggle" href="#" id="navbarChallengesDropdown"-->
+<!--                                       role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                                        Challenges-->
+<!--                                    </a>-->
+<!--                                    <div class="dropdown-menu" aria-labelledby="navbarChallengesDropdown">-->
+<!--                                        <a class="dropdown-item" href="/artemis?language=C">C</a>-->
+<!--                                        <a class="dropdown-item" href="/artemis?language=ASM64">ASM</a>-->
+<!--                                    </div>-->
+<!--                                </li>-->
+<!--                                </li>-->
+<!--                                    <li class="nav-item active">-->
+<!--                                    <a class="nav-link fs-4" href="/artemis/scoreboard">Scoreboard</a>-->
+<!--                                </li>-->
                             </ul>
                         </div>
                         <div class="col-2 align-self-end">
@@ -110,7 +110,7 @@
         {% block content %}{% endblock content %}
 
         <footer class="pt-3 mt-4 text-muted border-top">
-            C3T Artemis Prototype &copy; 2021
+            C3T Helios Prototype &copy; 2021
         </footer>
     </div>
 </main>

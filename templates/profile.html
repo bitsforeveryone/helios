@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+# push in username
+{% block username %}
+{{ session["name"] }}
+{% endblock username %}
+{% block title %}
+Challenges
+{% endblock title %}
+
+{% block content %}
+
+<div class="row h-100">
+    <div class="col-4 align-items-start">
+        <div class="card">
+            <img class="card-img-top" src="https://branching.realmtiel.com/static/images/helicopyet.jpg"
+                 alt="Card image cap">
+            <div class="card-body">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab"
+                       aria-controls="v-pills-home" aria-selected="true">Overview</a>
+                    <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab"
+                       aria-controls="v-pills-profile" aria-selected="false">Profile Settings</a>
+                    <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab"
+                       aria-controls="v-pills-messages" aria-selected="false">Reclass</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        {% for category, exp in profile['xp'].items() %}
+        <div class="card mb-2">
+            <div class="card-header">
+                {{ category }}
+            </div>
+            <div class="progress m-3" style="height: 20px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                     style="width: {{ (exp/500)+5 }}%;" aria-valuenow="25" aria-valuemin="0"
+                     aria-valuemax="100">{{ exp }}xp
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="col-4">
+        <div class="card">
+            <canvas class=" p-2" id="ctrRadarChart" width="140" height="140"></canvas>
+        </div>
+        <div class="card mt-2">
+            <div class="card-header">
+                Competitions
+            </div>
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
+                <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
+                <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<!--Loads scripts for the skill chart and puts it in ctrRadarChart-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.js"></script>
+<script>
+    xpData = {{ profile['xp'] | tojson | safe }}
+    const data = {
+        labels: Object.keys(xpData),
+        datasets: [{
+            label: 'Skill Progression',
+            data: Object.values(xpData),
+            fill: true,
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgb(255, 99, 132)',
+            pointBackgroundColor: 'rgb(255, 99, 132)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(255, 99, 132)'
+        }]
+    };
+
+    const ctx = document.getElementById('ctrRadarChart');
+    const skillChart = new Chart(ctx, {
+        type: 'radar',
+        data: data,
+        options: {
+            scales: {
+                r: {
+                    suggestedMin: 0,
+                    suggestedMax: 100,
+                }
+            },
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            }
+        }
+    });
+
+
+</script>
+{% endblock content %}
