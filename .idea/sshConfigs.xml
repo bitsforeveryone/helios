@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="SshConfigs">
-    <configs>
-      <sshConfig host="helios.c3t.eecs.net" id="8094037d-cb49-4caa-882f-29e2cfc8153b" keyPath="C:\Users\cocka\.ssh\id_helios" port="22" nameFormat="DESCRIPTIVE" username="c3t" />
-    </configs>
-  </component>
-</project>
