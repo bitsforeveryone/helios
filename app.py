@@ -1,5 +1,6 @@
 import random
 import string
+import imghdr
 
 from bson import ObjectId
 from flask import Flask, render_template, request, redirect, url_for, session, abort
@@ -43,6 +44,7 @@ C3T_DISCORD_ID="675737159717617666"
 
 USERS=mongoHelios.db.users
 RANKFACTS=mongoHelios.db.rankFacts
+COMPETITIONS=mongoHelios.db.competitions
 ARTEMIS_SUBMISSIONS=mongoArtemis.db.submissions
 
 @app.route('/')
@@ -139,10 +141,6 @@ def authDiscord():
         USERS.insert_one({
             'userID': userData['id'],
             "name":userData['username'],
-            "artemis":{
-                "C":0,
-                "ASM":0
-            },
             "xp":{
                 "binex": 0,
                 "crypto": 0,
@@ -151,13 +149,15 @@ def authDiscord():
                 "red": 0,
             },
             "competitions":[],
-            "assignment":"",
+            "specialization": "",
+            "seniority": "member",
             "profile": {
                 "age":"",
+                "class":"",
                 "email":"",
                 "summary":"",
                 "realname":"",
-                "profilePic":""
+                "avatar":""
             }
         })
         session["userID"]=userData['id']
@@ -180,11 +180,22 @@ def getRankFacts():
     return rankFacts
 
 # profile page
-@app.route('/profile')
+@app.route('/profile',methods=["GET","POST"])
 def profile():
-    rankFacts=getRankFacts()
-    profileDict=USERS.find_one({'userID':session['userID']})
-    return render_template('profile.html',session=session, profile=profileDict, rankFacts=rankFacts)
+    # if GET request, serve page
+    if request.method=="GET":
+        profileDict=USERS.find_one({'userID':session['userID']})
+        rankFacts=getRankFacts()
+        if profileDict==None:
+            abort(403)
+        return render_template('profile.html',session=session, profile=profileDict, rankFacts=rankFacts)
+    if request.method=="POST":
+        print(request.data)
+
+        if len(request.files)>0:
+            avatarFile=request.files.values()[0]
+            print(imghdr.what(request.files.values()[0]))
+        return "safafs"
 
 
 @app.route('/logout')

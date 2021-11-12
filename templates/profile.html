@@ -2,104 +2,156 @@
 
 # push in username
 {% block username %}
-{{ session["name"] }}
+    {{ session["name"] }}
 {% endblock username %}
 {% block title %}
-Challenges
+    Challenges
 {% endblock title %}
 
 {% block content %}
 
-<div class="row h-100">
-    <div class="col-4 align-items-start">
-        <div class="card">
-            <img class="card-img-top" src="https://branching.realmtiel.com/static/images/helicopyet.jpg"
-                 alt="Card image cap">
-            <div class="card-body">
-                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab"
-                       aria-controls="v-pills-home" aria-selected="true">Overview</a>
-                    <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab"
-                       aria-controls="v-pills-profile" aria-selected="false">Profile Settings</a>
-                    <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab"
-                       aria-controls="v-pills-messages" aria-selected="false">Reclass</a>
+    <div class="row h-100">
+        <div class="col-4 align-items-start">
+            <div class="card">
+                <img class="card-img-top" src="https://branching.realmtiel.com/static/images/helicopyet.jpg"
+                     alt="Card image cap">
+                <div class="card-body">
+                    <div class="nav flex-column nav-pills" id="profile-navigation" role="tablist"
+                         aria-orientation="vertical">
+                        <a class="nav-link active" id="overview-tab" data-toggle="pill" href="#nav-overview"
+                           role="tab"
+                           aria-controls="nav-overview" aria-selected="true">Overview</a>
+                        <a class="nav-link" id="settings-tab" data-toggle="pill" href="#nav-settings"
+                           role="tab"
+                           aria-controls="settings-tab" aria-selected="false">Profile Settings</a>
+                        <a class="nav-link" id="reclass-tab" data-toggle="pill" href="#nav-reclass"
+                           role="tab"
+                           aria-controls="nav-reclass" aria-selected="false">Reclass</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-4">
-        {% for category, exp in profile['xp'].items() %}
-        <div class="card mb-2">
-            <div class="card-header">
-                {{ category }}
-            </div>
-            <div class="progress m-3" style="height: 20px;">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                     style="width: {{ (exp/500)+5 }}%;" aria-valuenow="25" aria-valuemin="0"
-                     aria-valuemax="100">{{ exp }}xp
+        {# tab-content will switch based on pill selection #}
+        <div class="col-8 tab-content">
+            <div class="tab-pane fade show active w-100" id="nav-overview" role="tabpanel"
+                 aria-labelledby="overview-tab">
+                <div class="row">
+                    <div class="col-6 ">
+                        {% for category, exp in profile['xp'].items() %}
+                            <div class="card mb-2">
+                                <div class="card-header">
+                                    {{ category }}
+                                </div>
+                                <div class="progress m-3" style="height: 20px;">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                         role="progressbar"
+                                         style="width: {{ (exp/500)+5 }}%;" aria-valuenow="25" aria-valuemin="0"
+                                         aria-valuemax="100">{{ exp }}xp
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-5">
+                        <div class="card">
+                            <canvas class=" p-2" id="ctrRadarChart" width="140" height="140"></canvas>
+                        </div>
+                        <div class="card mt-2">
+                            <div class="card-header">
+                                Competitions
+                            </div>
+                            <div class="list-group">
+                                <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
+                                <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
+                                <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
-    </div>
-    <div class="col-4">
-        <div class="card">
-            <canvas class=" p-2" id="ctrRadarChart" width="140" height="140"></canvas>
-        </div>
-        <div class="card mt-2">
-            <div class="card-header">
-                Competitions
-            </div>
-            <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
-                <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
-                <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
+            <div class="row tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="settings-tab">
+                <div class="col card p-3">
+                    <form action="/profile" enctype = "multipart/form-data">
+                        <div class="mb-3">
+                            <label for="txtProfilePersonalName" class="form-label">Personal Name</label>
+                            <input name="name" type="text" class="form-control" id="txtProfilePersonalName"
+                                   placeholder="Joe Smith">
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtProfileClass" class="form-label">Class</label>
+                            <input name="class" type="text" class="form-control" id="txtProfileClass"
+                                   placeholder="2024">
+                        </div>
+                        <div class="mb-3">
+                            <label for="selProfileAvatar" class="form-label">Avatar</label>
+                            <input name="avatar" class="form-control" type="file" id="selProfileAvatar"
+                            accept="image/png, image/jpeg">
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtProfileEmail" class="form-label">Email address</label>
+                            <input name="email" type="email" class="form-control" id="txtProfileEmail"
+                                   placeholder="name@westpoint.edu">
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtProfileSummary" class="form-label">Summary</label>
+                            <textarea name="summary" class="form-control" id="txtProfileSummary" rows="3"></textarea>
+                        </div>
+                        <div class="row justify-content-center">
+                            <button type="submit" formtarget="_self" formmethod="post" class="btn btn-primary w-25">Submit</button>
+                        </div>
+                    </form>
+
+                </div>
 
             </div>
+
+            <div class="row tab-pane fade" id="nav-reclass" role="tabpanel" aria-labelledby="reclass-tab">
+
+            </div>
         </div>
     </div>
-</div>
-</div>
 
 
-<!--Loads scripts for the skill chart and puts it in ctrRadarChart-->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.js"></script>
-<script>
-    xpData = {{ profile['xp'] | tojson | safe }}
-    const data = {
-        labels: Object.keys(xpData),
-        datasets: [{
-            label: 'Skill Progression',
-            data: Object.values(xpData),
-            fill: true,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgb(255, 99, 132)',
-            pointBackgroundColor: 'rgb(255, 99, 132)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgb(255, 99, 132)'
-        }]
-    };
+    <!--Loads scripts for the skill chart and puts it in ctrRadarChart-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.js"></script>
+    <script>
+        xpData =
+        {{ profile['xp'] | tojson | safe }}
+        const data = {
+            labels: Object.keys(xpData),
+            datasets: [{
+                label: 'Skill Progression',
+                data: Object.values(xpData),
+                fill: true,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgb(255, 99, 132)',
+                pointBackgroundColor: 'rgb(255, 99, 132)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(255, 99, 132)'
+            }]
+        };
 
-    const ctx = document.getElementById('ctrRadarChart');
-    const skillChart = new Chart(ctx, {
-        type: 'radar',
-        data: data,
-        options: {
-            scales: {
-                r: {
-                    suggestedMin: 0,
-                    suggestedMax: 100,
-                }
-            },
-            elements: {
-                line: {
-                    borderWidth: 3
+        const ctx = document.getElementById('ctrRadarChart');
+        const skillChart = new Chart(ctx, {
+            type: 'radar',
+            data: data,
+            options: {
+                scales: {
+                    r: {
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                    }
+                },
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
                 }
             }
-        }
-    });
+        });
 
 
-</script>
+    </script>
 {% endblock content %}
