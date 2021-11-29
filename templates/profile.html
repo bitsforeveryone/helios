@@ -72,7 +72,12 @@
             </div>
             <div class="row tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="settings-tab">
                 <div class="col card p-3">
-                    <form action="/profile" enctype = "multipart/form-data">
+                    <form action="/profile/update" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="txtProfileHandle" class="form-label">Handle</label>
+                            <input name="name" type="text" class="form-control" id="txtProfileHandle"
+                                   placeholder="Neon">
+                        </div>
                         <div class="mb-3">
                             <label for="txtProfilePersonalName" class="form-label">Personal Name</label>
                             <input name="name" type="text" class="form-control" id="txtProfilePersonalName"
@@ -86,7 +91,7 @@
                         <div class="mb-3">
                             <label for="selProfileAvatar" class="form-label">Avatar</label>
                             <input name="avatar" class="form-control" type="file" id="selProfileAvatar"
-                            accept="image/png, image/jpeg">
+                                   accept="image/png, image/jpeg">
                         </div>
                         <div class="mb-3">
                             <label for="txtProfileEmail" class="form-label">Email address</label>
@@ -98,7 +103,9 @@
                             <textarea name="summary" class="form-control" id="txtProfileSummary" rows="3"></textarea>
                         </div>
                         <div class="row justify-content-center">
-                            <button type="submit" formtarget="_self" formmethod="post" class="btn btn-primary w-25">Submit</button>
+                            <button type="submit" formtarget="_self" formmethod="post" class="btn btn-primary w-25">
+                                Submit
+                            </button>
                         </div>
                     </form>
 
@@ -107,14 +114,49 @@
             </div>
 
             <div class="row tab-pane fade" id="nav-reclass" role="tabpanel" aria-labelledby="reclass-tab">
+            <div class="row">
+                    {% for category in rankFacts["categories"] %}
+                        <div class="col m-2 text-center">
+                            {{ category }}
+                        </div>
+                    {% endfor %}
+                </div>
+            <hr>
+                <div class="" style=" height: 80%; overflow-y: scroll; overflow-x: hidden;">
+{#            Start putting in ranks here #}
+            {% for rank, score in rankFacts["mastery"].items() %}
+                <div class="row">
+{# make lines between the rank boxes#}
+                    {% for category in rankFacts["categories"] %}
+                        <div class="col">
+                            <div class="w-50" style="height:{{ 20+score*0.03 }}px; border-right: 1px solid gray;"></div>
+                        </div>
+                        {% endfor %}
+                </div>
+                <div class="row">
+                    {% for category,fancy in rankFacts["categories"].items() %}
+                        <div class="col m-2 mt-0 mb-0 card
+                            {% if profile["xp"][category]< score %} classCard disabled {% endif %}" >
+                            <p class="text-center">{{ fancy }}<br>{{ rank.capitalize() }}</p>
+                            <div class="card-footer bg-transparent text-center">
+                                <a href="#" class="btn btn-primary">Apply</a>
+                            </div>
 
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
             </div>
+            </div>
+        </div>
         </div>
     </div>
 
-
+    <!-- drag control library -->
+    <script type="text/javascript" src="/static/dragscroll.js"></script>
     <!--Loads scripts for the skill chart and puts it in ctrRadarChart-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.js"></script>
+
     <script>
         xpData =
         {{ profile['xp'] | tojson | safe }}

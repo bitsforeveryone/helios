@@ -1,3 +1,8 @@
+html,body {
+  height: 100vh;
+  overflow: hidden;
+}
+
 #gradingLoaderCtr {
   position: absolute;
   left: 50%;
@@ -64,4 +69,34 @@ pre {
 .btnDiscord {
   background-color: #7289DA;
 
+}
+
+.masteryPath {
+  background-image: url("/static/images/vertical.png");
+  background-size: cover;
+}
+
+
+.vl {
+  border-left: 4px solid gray;
+  height: 10%;
+  position: absolute;
+  left: 50%;
+  margin-left: -3px;
+  top: 0;
+}
+
+#nav-reclass {
+  height: 50%;
+  /*overflow-y: scroll;*/
+  /*overflow-x: hidden;*/
+}
+
+.classCard.disabled {
+  background-color: darkgray;
+  color: gray;
+}
+
+.classCard > .btn {
+  background-color: black;
 }

@@ -9,14 +9,16 @@ import json
 
 from flask_pymongo import PyMongo
 
-from libhelios import heliosChallenge, heliosSubmission, heliosAuthenticate
-
-from challenges import *
+from libhelios import heliosChallenge, heliosSubmission, heliosAuthenticate, heliosDatabase
 
 app = Flask(__name__)
 
 mongoHelios = PyMongo(app, uri="mongodb://localhost:27017/helios")
 mongoArtemis = PyMongo(app, uri="mongodb://localhost:27017/artemis")
+
+# load/update helios database definitions with spec from file
+heliosDatabase.populateDatabase(mongoHelios)
+
 
 # load/update challenges into DB
 heliosChallenge.heliosChallenge.loadChallenges(mongoArtemis.db)
@@ -175,8 +177,10 @@ def test():
 def getRankFacts():
     rankFacts={}
     for record in RANKFACTS.find({},{'_id': 0}):
+        print(record)
         factName=list(record.keys())[0]
         rankFacts[factName]=record[factName]
+    print(rankFacts)
     return rankFacts
 
 # profile page
@@ -196,6 +200,11 @@ def profile():
             avatarFile=request.files.values()[0]
             print(imghdr.what(request.files.values()[0]))
         return "safafs"
+
+@app.route('/profile/update', methods=["POST"])
+def updateProfile():
+    print(dict(request.form))
+    return "safasf"
 
 
 @app.route('/logout')

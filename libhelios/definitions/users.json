@@ -1,0 +1,22 @@
+{
+  "userID": "",
+  "name": "template",
+  "xp": {
+    "binex": 0,
+    "crypto": 0,
+    "web": 0,
+    "blue": 0,
+    "red": 0
+  },
+  "competitions": [],
+  "specialization": "",
+  "seniority": "",
+  "profile": {
+    "age": "",
+    "class": "",
+    "email": "",
+    "summary": "",
+    "realname": "",
+    "avatar": ""
+  }
+}
