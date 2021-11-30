@@ -3,7 +3,7 @@ import string
 import imghdr
 
 from bson import ObjectId
-from flask import Flask, render_template, request, redirect, url_for, session, abort
+from flask import Flask, render_template, request, redirect, url_for, session, abort, jsonify
 
 import json
 
@@ -53,9 +53,11 @@ ARTEMIS_SUBMISSIONS=mongoArtemis.db.submissions
 def login():
     if "userID" in session:
         # TODO: This should go somewhere else
-        return redirect(url_for('artemis'))
+        return redirect(url_for('profile'))
     # otherwise need to actually login. Generate a state string
     # this is used to ensure login returns are actually those requested by app
+    # note that these don't persist in the database so user sessions are technically invalidated every restart
+    # however as of 30NOV there is no check to verify whether existing sessions have a corresponding Discord State (api does not allow)
     state=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(16))
     DISCORD_REQUESTS.append(state)
 
@@ -168,7 +170,7 @@ def authDiscord():
         session["userID"]=userData['id']
         session["name"]=userData['username']
 
-    return redirect(url_for('artemis'))
+    return redirect(url_for('profile'))
 
 @app.route('/test')
 def test():
@@ -186,6 +188,9 @@ def getRankFacts():
 # profile page
 @app.route('/profile',methods=["GET","POST"])
 def profile():
+    # block if not valid session
+    if 'userID' not in session:
+        abort(403)
     # if GET request, serve page
     if request.method=="GET":
         profileDict=USERS.find_one({'userID':session['userID']})
@@ -203,8 +208,20 @@ def profile():
 
 @app.route('/profile/update', methods=["POST"])
 def updateProfile():
-    print(dict(request.form))
-    return "safasf"
+    # block if not a valid session
+    if 'userID' not in session:
+        abort(403)
+    # if not a valid user this is cause for concern but just error out for now TODO: Generate report
+    if USERS.find_one({'userID':session['userID']}) == None:
+        abort(403)
+    # update user based on session
+    # create dict for painless update
+    newData={"profile":dict(request.form)}
+    #mongo query
+    newData={"$set": newData}
+    #update
+    USERS.update_one({'userID':session['userID']},newData)
+    return redirect(url_for("profile"))
 
 
 @app.route('/logout')

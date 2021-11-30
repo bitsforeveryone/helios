@@ -72,10 +72,10 @@
             </div>
             <div class="row tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="settings-tab">
                 <div class="col card p-3">
-                    <form action="/profile/update" enctype="multipart/form-data">
+                    <form id="frmProfileUpdate" action="/profile/update" enctype="multipart/form-data" >
                         <div class="mb-3">
                             <label for="txtProfileHandle" class="form-label">Handle</label>
-                            <input name="name" type="text" class="form-control" id="txtProfileHandle"
+                            <input name="handle" type="text" class="form-control" id="txtProfileHandle"
                                    placeholder="Neon">
                         </div>
                         <div class="mb-3">
@@ -122,7 +122,7 @@
                     {% endfor %}
                 </div>
             <hr>
-                <div class="" style=" height: 80%; overflow-y: scroll; overflow-x: hidden;">
+                <div class="" >
 {#            Start putting in ranks here #}
             {% for rank, score in rankFacts["mastery"].items() %}
                 <div class="row">
@@ -157,6 +157,22 @@
     <!--Loads scripts for the skill chart and puts it in ctrRadarChart-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.js"></script>
 
+{# set up profile with current values for reference#}
+    <script>
+    let profileData={{ profile['profile'] | tojson | safe }}
+    let formInputs=document.getElementById("frmProfileUpdate").querySelectorAll("input")
+
+    formInputs.forEach(function (item) {
+        if (item.name in profileData) {
+            item.value = profileData[item.name]
+            console.log("did a thing")
+        }
+    })
+
+
+    </script>
+
+{#  set up XP chart library #}
     <script>
         xpData =
         {{ profile['xp'] | tojson | safe }}
@@ -193,7 +209,5 @@
                 }
             }
         });
-
-
     </script>
 {% endblock content %}

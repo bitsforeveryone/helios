@@ -1,6 +1,14 @@
-html,body {
+html {
   height: 100vh;
   overflow: hidden;
+  overflow-x: hidden;
+
+}
+
+body {
+  height: 100vh;
+  overflow: scroll;
+  overflow-x: hidden;
 }
 
 #gradingLoaderCtr {

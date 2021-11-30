@@ -33,7 +33,7 @@ def getToken(request, requestArray, secrets):
 
     return (r.json()["access_token"], r.json()["token_type"])
 
-# given an access token, retrieve basic information
+# given an access token, retrieve basic information from Discord API
 def getUser(accessToken, accessTokenType="Bearer"):
     headers = {
         'Content-Type': 'application/json',
@@ -44,6 +44,7 @@ def getUser(accessToken, accessTokenType="Bearer"):
 
     return userData
 
+# given an access token, retrieve guild information from Discord API
 def getGuilds(accessToken, accessTokenType="Bearer"):
     headers = {
         'Content-Type': 'application/json',
