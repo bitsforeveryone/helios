@@ -1,10 +1,10 @@
-# examine helios database and apply definitions if none exist
+# examine libhelios database and apply definitions if none exist
 import json
 
 from flask_pymongo import PyMongo
 import os
 
-DEFINITIONS_ROOT=os.path.join("helios","definitions")
+DEFINITIONS_ROOT=os.path.join("libhelios","definitions")
 
 def populateDatabase(heliosDB : PyMongo):
     # retreive definitions
@@ -19,6 +19,7 @@ def populateDatabase(heliosDB : PyMongo):
                 continue
             # if it isn't, populate with defaults
             # read template into dict
+            print(fullPath)
             with open(fullPath) as reader:
                 contents=json.load(reader)
                 # declare new collection in pyMongo

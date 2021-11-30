@@ -3,7 +3,7 @@
 from time import sleep
 
 import docker
-from helios import heliosLanguages, heliosChallenge
+from libhelios import heliosLanguages, heliosChallenge
 
 class heliosSubmission:
 
