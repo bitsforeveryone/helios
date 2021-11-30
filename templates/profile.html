@@ -5,7 +5,7 @@
     {{ session["name"] }}
 {% endblock username %}
 {% block title %}
-    Challenges
+    Profile
 {% endblock title %}
 
 {% block content %}
@@ -160,7 +160,7 @@
 {# set up profile with current values for reference#}
     <script>
     let profileData={{ profile['profile'] | tojson | safe }}
-    let formInputs=document.getElementById("frmProfileUpdate").querySelectorAll("input")
+    let formInputs=document.getElementById("frmProfileUpdate").querySelectorAll("input,textarea");
 
     formInputs.forEach(function (item) {
         if (item.name in profileData) {

@@ -4,7 +4,7 @@ import json
 from flask_pymongo import PyMongo
 import os
 
-DEFINITIONS_ROOT=os.path.join("libhelios","definitions")
+DEFINITIONS_ROOT=os.path.join("helios","definitions")
 
 def populateDatabase(heliosDB : PyMongo):
     # retreive definitions
