@@ -11,6 +11,7 @@ from flask_pymongo import PyMongo
 from __main__ import app
 
 # define blueprint for use by main app
+from markupsafe import escape
 from werkzeug.utils import secure_filename
 
 helios = Blueprint('helios', __name__, template_folder='templates')
@@ -195,12 +196,40 @@ def submitWriteup():
         try:
             requestName=(request.form["name"] if len(request.form["name"])>0 else None)
             requestCategory=(request.form["category"] if request.form["category"] in rankFacts["categories"] else None)
-            requestDifficulty=(request.form["difficulty"] if request.form["difficulty"] < rankFacts["writeups"].keys()[-1] else None)
+            requestDifficulty=(request.form["difficulty"]
+                               if int(request.form["difficulty"]) < list(rankFacts["writeups"].values())[-1] else None)
+
+            #retrieve writeup markdown
+            requestFile=None
+            if len(request.files) > 0 and len(request.files['writeup'].filename) > 0:
+                # remove sanitization for now - sanitized at endpoint
+                # requestFile=escape(str(request.files['writeup'].read(),'utf-8'))
+                requestFile=str(request.files['writeup'].read(),'utf-8')
+
+            if None in [requestName,requestCategory,requestDifficulty]:
+                raise ValueError
+            #commit to database
+            # create copy from template
+            newWriteup = mongoHelios.db.writeups.find_one({'name': 'template'}, {"_id": 0})
+            newWriteup["name"]=requestName
+            newWriteup["category"]=requestCategory
+            newWriteup["difficulty"]=requestDifficulty
+            newWriteup["file"]=requestFile
+            newWriteup["writer"]=session['userID']
+            mongoHelios.db.writeups.insert_one(newWriteup)
+
         except:
             # dip out
             abort(406)
+    return redirect(url_for("helios.writeups"))
 
+@helios.route('/admin')
+def admin():
+    heliosAuthenticate.validateUser(session)
 
+    writeups=list(mongoHelios.db.writeups.find({"name": {"$not": {"$eq":"template"}}},{"_id":0}))
+    print(writeups[0])
+    return render_template("admin.html",writeups=writeups,rankFacts=getRankFacts())
 
 @helios.route('/logout')
 def logout():

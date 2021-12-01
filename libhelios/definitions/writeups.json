@@ -1,10 +1,12 @@
 {
   "template": {
     "name": "template",
+    "writer": "",
     "category": "",
     "difficulty": 0,
     "file": "",
     "challengeName": "",
-    "competition": ""
+    "competition": "",
+    "approved": 0
   }
 }
