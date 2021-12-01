@@ -7,9 +7,11 @@
     "crypto": "Crypto"
   },
   "writeups": {
+    "sanity": 1,
     "basic": 5,
     "easy": 15,
     "moderate": 25,
+    "difficult": 40,
     "impossible": 60
   },
   "mastery": {

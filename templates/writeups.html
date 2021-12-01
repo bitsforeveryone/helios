@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+# push in username
+{% block username %}
+    {{ session["name"] }}
+{% endblock username %}
+{% block title %}
+    Submit Writeup
+{% endblock title %}
+
+{% block content %}
+    <div class="row align-items-center">
+        <div class="col-2"></div>
+        <div class="col card p-3">
+            <div class="alert alert-primary" role="alert">
+                You can submit writeups here. Writeups are documentation of how you solved a challenge, starting with
+                what you were given and including what you tried. Download a template <a href="">HERE</a>
+            </div>
+            <form id="frmSubmitWriteup" action="/writeups/submit" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col">
+                            <label for="txtChallengeName" class="form-label">Challenge Name</label>
+                            <input name="name" type="text" class="form-control" id="txtChallengeName"
+                                   placeholder="">
+                        </div>
+                        <div class="col">
+                            <label for="drpChallengeCategory" class="form-label">Category</label>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        id="drpChallengeCategory"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    Category
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="drpChallengeCategory">
+                                    {% for category in rankFacts["categories"] %}
+                                        <li><a class="dropdown-item" href="#"
+                                               onclick="updateCategory(this)">{{ category.capitalize() }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                <input type="hidden" id="hiddenCategory" name="category">
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="mb-3">
+
+                </div>
+                <div class="mb-3">
+                    <label for="rngChallengeDifficulty" class="form-label">Difficulty</label>
+                    <input type="range" name="difficulty" class="form-range" min="0" max="5" id="rngChallengeDifficulty">
+                </div>
+                <div class="mb-3">
+                    <label for="selWriteup" class="form-label">Writeup</label>
+                    <input name="writeup" class="form-control" type="file" id="selWriteup"
+                           accept=".md,.zip,.tgz,.tar,.7z">
+                </div>
+                {#                <div class="mb-3">#}
+                {#                    <label for="txtProfileSummary" class="form-label">Summary</label>#}
+                {#                    <textarea name="summary" class="form-control" id="txtProfileSummary" rows="3"></textarea>#}
+                {#                </div>#}
+                <div class="row justify-content-center">
+                    <button type="submit" formtarget="_self" formmethod="post" class="btn btn-primary w-25">
+                        Submit
+                    </button>
+                </div>
+            </form>
+
+        </div>
+        <div class="col-2"></div>
+    </div>
+
+    <script>function updateCategory(element) {
+        console.log(element);
+        document.getElementById("drpChallengeCategory").innerText = element.text;
+        document.getElementById("hiddenCategory").value = element.text.toLowerCase();
+    }</script>
+{% endblock %}

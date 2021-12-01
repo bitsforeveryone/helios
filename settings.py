@@ -20,4 +20,4 @@ class settings():
     # database connections
     mongoArtemis = PyMongo(app, uri="mongodb://localhost:27017/artemis")
     # define DB connection #TODO: shared file
-    mongoHelios = PyMongo(app, uri="mongodb://localhost:27017/libhelios")
+    mongoHelios = PyMongo(app, uri="mongodb://localhost:27017/helios")

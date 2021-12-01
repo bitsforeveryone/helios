@@ -11,10 +11,19 @@
 {% block content %}
 
     <div class="row h-100">
-        <div class="col-4 align-items-start">
+        <div class="col-3 align-items-start">
             <div class="card">
-                <img class="card-img-top" src="https://branching.realmtiel.com/static/images/helicopyet.jpg"
+                <div class="row align-items-center m-4">
+                    <div>
+                <div class="card" >
+                    <img class="card-img-top" src="{{ profile["profile"]["avatar"] }}"
                      alt="Card image cap">
+                    <div class="card-body">
+                        {{ rankFacts["categories"][profile["specialization"]].capitalize()}} {{ profile["mastery"].capitalize()}}
+                    </div>
+                </div>
+                    </div>
+                </div>
                 <div class="card-body">
                     <div class="nav flex-column nav-pills" id="profile-navigation" role="tablist"
                          aria-orientation="vertical">
@@ -135,11 +144,21 @@
                 </div>
                 <div class="row">
                     {% for category,fancy in rankFacts["categories"].items() %}
-                        <div class="col m-2 mt-0 mb-0 card
-                            {% if profile["xp"][category]< score %} classCard disabled {% endif %}" >
+                        <div class="col m-2 mt-0 mb-0 card classCard
+                            {% if profile["xp"][category]< score %}
+                            disabled
+                            {% if profile["specialization"] == category  %}
+
+                            {% else %}
+                            opacity-50
+                            {% endif %}
+                            {% endif %}
+                            {# check if this is the currently selected class #}
+                            {%  if profile["specialization"] == category and profile["mastery"].lower() == rank.lower()%}
+                            bg-success text-white {% endif %}">
                             <p class="text-center">{{ fancy }}<br>{{ rank.capitalize() }}</p>
                             <div class="card-footer bg-transparent text-center">
-                                <a href="#" class="btn btn-primary">Apply</a>
+                                <a href="/profile/reclass?category={{ category.lower() }}&rank={{ rank.lower() }}" class="btn btn-primary">Apply</a>
                             </div>
 
                         </div>
@@ -164,11 +183,19 @@
 
     formInputs.forEach(function (item) {
         if (item.name in profileData) {
-            item.value = profileData[item.name]
-            console.log("did a thing")
+            try {
+                item.value = profileData[item.name]
+                console.log("did a thing")
+            }
+            catch (e) {
+                
+            }
         }
     })
 
+    function requestReclass() {
+
+    }
 
     </script>
 

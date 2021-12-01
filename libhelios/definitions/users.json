@@ -1,6 +1,6 @@
 {
-  "userID": "",
-  "name": "template",
+"template":{
+  "userID": "template",
   "xp": {
     "binex": 0,
     "crypto": 0,
@@ -10,14 +10,15 @@
   },
   "competitions": [],
   "specialization": "",
-  "seniority": "",
+  "mastery": "",
+  "seniority": "member",
   "profile": {
-    "age": "",
     "handle": "",
     "class": "",
     "email": "",
     "summary": "",
-    "realname": "",
+    "name": "",
     "avatar": ""
   }
+}
 }

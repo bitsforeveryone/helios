@@ -1,8 +1,10 @@
 {
-  "event": "template",
-  "roster": [],
-  "challenges": [],
-  "timeStart" : "",
-  "timeEnd": "",
-  "teams": []
+  "template": {
+    "event": "template",
+    "roster": [],
+    "challenges": [],
+    "timeStart": "",
+    "timeEnd": "",
+    "teams": []
+  }
 }

@@ -102,9 +102,9 @@ pre {
 
 .classCard.disabled {
   background-color: darkgray;
-  color: gray;
+  color: black;
 }
 
-.classCard > .btn {
-  background-color: black;
+.classCard.disabled > div {
+  display: none;
 }

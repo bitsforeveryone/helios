@@ -1,6 +1,9 @@
 # authenticate using discord
 
 import requests
+from flask import url_for
+from werkzeug.exceptions import abort
+from werkzeug.utils import redirect
 
 GET_USER="/users/@me"
 GET_USER_GUILDS="/users/@me/guilds"
@@ -51,3 +54,7 @@ def getGuilds(accessToken, accessTokenType="Bearer"):
     userGuilds=requests.get(DISCORD_API+GET_USER_GUILDS, headers=headers)
     userGuilds=userGuilds.json()
     return userGuilds
+
+def validateUser(session):
+    if 'userID' not in session:
+        return redirect(url_for("helios.login"))

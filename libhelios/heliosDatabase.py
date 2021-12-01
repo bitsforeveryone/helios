@@ -26,4 +26,8 @@ def populateDatabase(heliosDB : PyMongo):
                 heliosDB.db[collectionName]
                 # insert contents item by item
                 for entry in contents.keys():
-                    heliosDB.db[collectionName].insert({entry:contents[entry]})
+                    if entry=="template":
+                        heliosDB.db[collectionName].insert(contents[entry])
+                        break
+                    else:
+                        heliosDB.db[collectionName].insert({entry:contents[entry]})
