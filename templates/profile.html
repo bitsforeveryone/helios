@@ -4,6 +4,13 @@
 {% block username %}
     {{ session["name"] }}
 {% endblock username %}
+{% block admin %}
+    {% if session.admin == 1 %}
+        <li class="nav-item active">
+            <a class="nav-link fs-4" href="/admin">Admin</a>
+        </li>
+    {% endif %}
+{% endblock admin %}
 {% block title %}
     Profile
 {% endblock title %}
@@ -15,13 +22,13 @@
             <div class="card">
                 <div class="row align-items-center m-4">
                     <div>
-                <div class="card" >
-                    <img class="card-img-top" src="{{ profile["profile"]["avatar"] }}"
-                     alt="Card image cap">
-                    <div class="card-body">
-                        {{ rankFacts["categories"][profile["specialization"]].capitalize()}} {{ profile["mastery"].capitalize()}}
-                    </div>
-                </div>
+                        <div class="card">
+                            <img class="card-img-top" src="{{ profile["profile"]["avatar"] }}"
+                                 alt="Card image cap">
+                            <div class="card-body">
+                                {{ profile["specialization"].capitalize() }} {{ profile["mastery"].capitalize() }}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -54,8 +61,15 @@
                                 <div class="progress m-3" style="height: 20px;">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated"
                                          role="progressbar"
-                                         style="width: {{ (exp/500)+5 }}%;" aria-valuenow="25" aria-valuemin="0"
-                                         aria-valuemax="100">{{ exp }}xp
+                                         {# adjust width to be progress until next level in that category #}
+                                        {% set nextTargetScore = 500 %}
+                                            {% for rank, req in rankFacts["mastery"].items() %}
+                                                {% if exp<req %}
+                                                    {% set nextTargetScore = req %}
+                                                {% endif %}
+                                         {% endfor %}
+                                         style="width: {{ ((exp/nextTargetScore)*10)+8 }}%;" aria-valuenow="25" aria-valuemin="0"
+                                         aria-valuemax="100">{{ exp | int }}xp
                                     </div>
                                 </div>
                             </div>
@@ -81,7 +95,7 @@
             </div>
             <div class="row tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="settings-tab">
                 <div class="col card p-3">
-                    <form id="frmProfileUpdate" action="/profile/update" enctype="multipart/form-data" >
+                    <form id="frmProfileUpdate" action="/profile/update" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="txtProfileHandle" class="form-label">Handle</label>
                             <input name="handle" type="text" class="form-control" id="txtProfileHandle"
@@ -123,52 +137,54 @@
             </div>
 
             <div class="row tab-pane fade" id="nav-reclass" role="tabpanel" aria-labelledby="reclass-tab">
-            <div class="row">
+                <div class="row">
                     {% for category in rankFacts["categories"] %}
                         <div class="col m-2 text-center">
                             {{ category }}
                         </div>
                     {% endfor %}
                 </div>
-            <hr>
-                <div class="" >
-{#            Start putting in ranks here #}
-            {% for rank, score in rankFacts["mastery"].items() %}
-                <div class="row">
-{# make lines between the rank boxes#}
-                    {% for category in rankFacts["categories"] %}
-                        <div class="col">
-                            <div class="w-50" style="height:{{ 20+score*0.03 }}px; border-right: 1px solid gray;"></div>
+                <hr>
+                <div class="">
+                    {#            Start putting in ranks here #}
+                    {% for rank, score in rankFacts["mastery"].items() %}
+                        <div class="row">
+                            {# make lines between the rank boxes#}
+                            {% for category in rankFacts["categories"] %}
+                                <div class="col">
+                                    <div class="w-50"
+                                         style="height:{{ 20+score*0.03 }}px; border-right: 1px solid gray;"></div>
+                                </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
-                </div>
-                <div class="row">
-                    {% for category,fancy in rankFacts["categories"].items() %}
-                        <div class="col m-2 mt-0 mb-0 card classCard
+                        <div class="row">
+                            {% for category,fancy in rankFacts["categories"].items() %}
+                                <div class="col m-2 mt-0 mb-0 card classCard
                             {% if profile["xp"][category]< score %}
                             disabled
-                            {% if profile["specialization"] == category  %}
+                            {% if profile["specialization"] == category %}
 
                             {% else %}
                             opacity-50
                             {% endif %}
                             {% endif %}
                             {# check if this is the currently selected class #}
-                            {%  if profile["specialization"] == category and profile["mastery"].lower() == rank.lower()%}
+                            {% if profile["specialization"] == category and profile["mastery"].lower() == rank.lower() %}
                             bg-success text-white {% endif %}">
-                            <p class="text-center">{{ fancy }}<br>{{ rank.capitalize() }}</p>
-                            <div class="card-footer bg-transparent text-center">
-                                <a href="/profile/reclass?category={{ category.lower() }}&rank={{ rank.lower() }}" class="btn btn-primary">Apply</a>
-                            </div>
+                                    <p class="text-center">{{ fancy }}<br>{{ rank.capitalize() }}</p>
+                                    <div class="card-footer bg-transparent text-center">
+                                        <a href="/profile/reclass?category={{ category.lower() }}&rank={{ rank.lower() }}"
+                                           class="btn btn-primary">Apply</a>
+                                    </div>
 
+                                </div>
+                            {% endfor %}
                         </div>
                     {% endfor %}
                 </div>
-            {% endfor %}
-            </div>
             </div>
         </div>
-        </div>
+    </div>
     </div>
 
     <!-- drag control library -->
@@ -176,30 +192,30 @@
     <!--Loads scripts for the skill chart and puts it in ctrRadarChart-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.js"></script>
 
-{# set up profile with current values for reference#}
+    {# set up profile with current values for reference#}
     <script>
-    let profileData={{ profile['profile'] | tojson | safe }}
-    let formInputs=document.getElementById("frmProfileUpdate").querySelectorAll("input,textarea");
+        let profileData = {{ profile['profile'] | tojson | safe }}
+            let
+        formInputs = document.getElementById("frmProfileUpdate").querySelectorAll("input,textarea");
 
-    formInputs.forEach(function (item) {
-        if (item.name in profileData) {
-            try {
-                item.value = profileData[item.name]
-                console.log("did a thing")
+        formInputs.forEach(function (item) {
+            if (item.name in profileData) {
+                try {
+                    item.value = profileData[item.name]
+                    console.log("did a thing")
+                } catch (e) {
+
+                }
             }
-            catch (e) {
-                
-            }
+        })
+
+        function requestReclass() {
+
         }
-    })
-
-    function requestReclass() {
-
-    }
 
     </script>
 
-{#  set up XP chart library #}
+    {#  set up XP chart library #}
     <script>
         xpData =
         {{ profile['xp'] | tojson | safe }}

@@ -4,6 +4,7 @@ import random
 import string
 from hashlib import md5
 
+import requests
 from flask import Blueprint, render_template, abort, session, request, redirect, url_for
 from flask_pymongo import PyMongo
 
@@ -76,12 +77,25 @@ def authDiscord():
         newUser=USERS.find_one({'userID':'template'},{"_id":0})
         newUser['userID']=userData['id']
         newUser['profile']['handle']=userData['username']
+        newUser['specialization']=""
+        newUser['mastery']="rookie"
+        # steal avatar from discord
+        req=requests.get(settings.BOT_ENDPOINT.format(f"users/{userData['id']}"))
+        newUser['profile']['avatar']=req.json()['displayAvatarURL']
+        # update discord
+        updateDiscordUser(newUser)
+        # insert
         USERS.insert_one(newUser)
         session["userID"]=userData['id']
         session["name"]=userData['username']
+
     else:
         session["userID"]=userData['id']
         session["name"]=thisUser["profile"]["handle"]
+
+    # admin
+    if userData['id'] in settings.ADMIN_USERS:
+        session["admin"]=1
 
     return redirect(url_for('helios.profile'))
 
@@ -126,7 +140,21 @@ def validateImage(image):
             return imageFormat
     return None
 
-
+#TODO: move this somewhere else
+# takes a user record and updates discord user
+def updateDiscordUser(userData):
+    # generate new nickname
+    nickname=settings.NAME_FORMAT.format(**{
+        "title":(f"{userData['specialization']} {userData['mastery']}".strip()),
+        "handle": userData["profile"]["handle"]
+    })
+    # TODO: Role support
+    #construct api call
+    endpoint=settings.BOT_ENDPOINT.format(f"users/{userData['userID']}")
+    try:
+        requests.put(endpoint, data={"nickname":nickname},timeout=3)
+    except Exception as e:
+        print(e)
 
 @helios.route('/profile/update', methods=["POST"])
 def updateProfile():
@@ -155,6 +183,14 @@ def updateProfile():
     newData={"$set": newData}
     #update
     USERS.update_one({'userID':session['userID']},newData)
+
+    # update discord user as well with completed result
+    newUser=dict(USERS.find_one({'userID':session['userID']}))
+    updateDiscordUser(newUser)
+
+    #update cookie
+    session["name"]=newUser["profile"]["handle"]
+
     return redirect(url_for("helios.profile"))
 
 @helios.route('/profile/reclass', methods=['GET'])
@@ -180,11 +216,15 @@ def reclass():
             USERS.update_one({'userID':session['userID']},reclass)
             print("reclass successful")
 
+            # update discord user as well with completed result
+            newUser = dict(USERS.find_one({'userID': session['userID']}))
+            updateDiscordUser(newUser)
+
     return redirect(url_for("helios.profile"))
 
 @helios.route('/writeups')
 def writeups():
-    return render_template('writeups.html',rankFacts=getRankFacts())
+    return render_template('writeups.html',rankFacts=getRankFacts(),session=session)
 
 @helios.route('/writeups/submit',methods=["POST"])
 # take a given writeup submission and commit to the database
@@ -226,13 +266,34 @@ def submitWriteup():
 @helios.route('/admin')
 def admin():
     heliosAuthenticate.validateUser(session)
+    # validate admin
+    if session["userID"] not in settings.ADMIN_USERS:
+        abort(403)
 
-    writeups=list(mongoHelios.db.writeups.find({"name": {"$not": {"$eq":"template"}}},{"_id":0}))
-    print(writeups[0])
-    return render_template("admin.html",writeups=writeups,rankFacts=getRankFacts())
+    writeups=list(mongoHelios.db.writeups.find({"name": {"$not": {"$eq":"template"}}}))
+    for writeup in writeups:
+        writeup["_id"]=str(writeup["_id"])
+    return render_template("admin.html",writeups=writeups,rankFacts=getRankFacts(),session=session)
+
+@helios.route('/admin/gradeWriteup',methods=["POST"])
+def submitGrade():
+    heliosAuthenticate.validateUser(session)
+    # validate admin
+    if session["userID"] not in settings.ADMIN_USERS:
+        abort(403)
+
+    # validate data
+    grade=request.form
+    if(int(grade["difficulty"])>0 and int(grade["quality"])>0):
+        print(grade)
+
+
+    return redirect(url_for("helios.admin"))
+
 
 @helios.route('/logout')
 def logout():
     session.pop('userID', None)
     session.pop('username',None)
+    session.pop('admin',None)
     return redirect(url_for('helios.login'))

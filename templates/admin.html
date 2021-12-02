@@ -7,9 +7,17 @@
 {% block title %}
     Admin
 {% endblock title %}
+{% block admin %}
+    {% if session.admin == 1 %}
+        <li class="nav-item active">
+            <a class="nav-link fs-4" href="/admin">Admin</a>
+        </li>
+    {% endif %}
+{% endblock admin %}
 
 {% block content %}
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="text/javascript" src="static/purify.min.js"></script>
     <ul class="nav nav-tabs h-100" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="writeups-tab" data-bs-toggle="tab" data-bs-target="#writeups"
@@ -59,22 +67,22 @@
                             <div class="card card-default d-none" style="width: 300px;" id="crdGrader">
                                 <div class="card-header">Grading</div>
                                 <div class="card-text p-2" id="panGrader">
-                                    <form>
+                                    <form action="/admin/gradeWriteup">
                                         <div class="mb-3">
                                             <label for="selDifficulty" class="form-label">Difficulty</label>
-                                            <select id="selDifficulty" class="form-select"
+                                            <select name="difficulty" id="selDifficulty" class="form-select"
                                                     aria-label="Default select example">
                                                 {% for difficulty, score in rankFacts["writeups"].items() %}
                                                     <option value="{{ score }}">{{ difficulty }}</option>
                                                 {% endfor %}
                                             </select>
                                             <div id="authorDifficultyRating" class="form-text">
-                                                Author rated this <a></a>
+                                                Author rated this <a class="font-weight-bold"></a>
                                             </div>
                                         </div>
                                         <div class="mb-3">
                                             <label for="selQuality" class="form-label">Quality</label>
-                                            <select id="selQuality" class="form-select"
+                                            <select name="quality" id="selQuality" class="form-select"
                                                     aria-label="Default select example">
                                                 <option value="1">Basic</option>
                                                 <option value="2">Good</option>
@@ -84,9 +92,12 @@
                                         <div class="mb-3">
                                             <label for="txtComments" class="form-label">Comments</label>
                                             <textarea name="comments" class="form-control" id="txtComments"
-                                                      rows="3"></textarea>
+                                                      rows="2"></textarea>
+                                            <input type="hidden" name="writeup" id="currentWriteup">
+
                                         </div>
-                                        <div class="row justify-content-center">
+
+                                        <div class="row justify-content-center" style="z-index: 3">
                                             <button type="submit" formtarget="_self" formmethod="post"
                                                     class="btn btn-primary w-25">
                                                 Submit
@@ -104,8 +115,6 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
     <div class="tab-pane fade" id="competitions" role="tabpanel" aria-labelledby="competitions-tab">...</div>
@@ -114,26 +123,29 @@
 
 
     <script>
+        {# create writeups and difficulties objects for use by client application #}
         writeupsObject = []
         {% for item in writeups %}
             writeupsObject.push({{ item | tojson | safe }})
         {% endfor %}
-
         writeupDifficulties = {{ rankFacts["writeups"] | tojson | safe }}
 
-        function selectWriteup(elmnt) {
-            //show grader
-            document.getElementById("crdGrader").classList.remove("d-none")
-            document.getElementById("crdWriteupPreview").classList.remove("d-none")
-            // set author difficulty
-            document.getElementById("authorDifficultyRating").children[0].innerHTML=
-                Object.keys(writeupDifficulties)[writeupsObject[elmnt.id]["difficulty"]]
+            {# Runs when a writeup is selected from the list control #}
+            function selectWriteup(elmnt) {
+                //show grader
+                document.getElementById("crdGrader").classList.remove("d-none")
+                document.getElementById("crdWriteupPreview").classList.remove("d-none")
+                // set author difficulty
+                document.getElementById("authorDifficultyRating").children[0].innerHTML =
+                    Object.keys(writeupDifficulties)[writeupsObject[elmnt.id]["difficulty"]]
+                //set control
+                document.getElementById("currentWriteup").value = writeupsObject[elmnt.id]["_id"]
 
-            //sanitize and render md
-            marked.setOptions({sanitize: true});
-            document.getElementById("writeupPreview").innerHTML = marked.parse(writeupsObject[elmnt.id]["file"]);
+                //sanitize and render md
+                let clean=DOMPurify.sanitize( writeupsObject[elmnt.id]["file"] );
+                document.getElementById("writeupPreview").innerHTML = marked.parse(clean);
 
-        }
+            }
     </script>
 
 {% endblock %}

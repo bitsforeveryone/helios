@@ -4,9 +4,17 @@
 {% block username %}
     {{ session["name"] }}
 {% endblock username %}
+{% block admin %}
+    {% if session.admin == 1 %}
+        <li class="nav-item active">
+            <a class="nav-link fs-4" href="/admin">Admin</a>
+        </li>
+    {% endif %}
+{% endblock admin %}
 {% block title %}
     Submit Writeup
 {% endblock title %}
+
 
 {% block content %}
     <div class="row align-items-center">
