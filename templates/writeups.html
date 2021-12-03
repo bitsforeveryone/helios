@@ -22,7 +22,7 @@
         <div class="col card p-3">
             <div class="alert alert-primary" role="alert">
                 You can submit writeups here. Writeups are documentation of how you solved a challenge, starting with
-                what you were given and including what you tried. Download a template <a href="">HERE</a>
+                what you were given and including what you tried. Download a template <a href="/static/content/writeup.md">HERE</a>
             </div>
             <form id="frmSubmitWriteup" action="/writeups/submit" enctype="multipart/form-data">
                 <div class="mb-3">
@@ -65,7 +65,7 @@
                 <div class="mb-3">
                     <label for="selWriteup" class="form-label">Writeup</label>
                     <input name="writeup" class="form-control" type="file" id="selWriteup"
-                           accept=".md,.zip,.tgz,.tar,.7z">
+                           accept=".md,.txt,.rtf">
                 </div>
                 {#                <div class="mb-3">#}
                 {#                    <label for="txtProfileSummary" class="form-label">Summary</label>#}
