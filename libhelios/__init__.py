@@ -29,8 +29,8 @@ USERS=mongoHelios.db.users
 RANKFACTS=mongoHelios.db.rankFacts
 COMPETITIONS=mongoHelios.db.competitions
 
-for object in mongoHelios.db.users.find({}):
-    print(object)
+# for object in mongoHelios.db.users.find({}):
+#     print(object)
 
 @helios.route('/')
 def login():
@@ -59,6 +59,7 @@ def authDiscord():
 
     userData=heliosAuthenticate.getUser(authtoken)
     userGuilds=heliosAuthenticate.getGuilds(authtoken)
+    guildUserData = requests.get(settings.BOT_ENDPOINT.format(f"users/{userData['id']}")).json()
 
     # iterate over guilds and ensure they belong to C3T guild
     inGuild=False
@@ -80,8 +81,10 @@ def authDiscord():
         newUser['specialization']=""
         newUser['mastery']="rookie"
         # steal avatar from discord
-        req=requests.get(settings.BOT_ENDPOINT.format(f"users/{userData['id']}"))
-        newUser['profile']['avatar']=req.json()['displayAvatarURL']
+        try:
+            newUser['profile']['avatar']=guildUserData['displayAvatarURL']
+        except Exception as e:
+            print(e)
         # update discord
         updateDiscordUser(newUser)
         # insert
@@ -94,14 +97,21 @@ def authDiscord():
         session["name"]=thisUser["profile"]["handle"]
 
     # admin
-    if userData['id'] in settings.ADMIN_USERS:
-        session["admin"]=1
+    # go through user roles and determine
+    try:
+        for userRole in guildUserData["roles"]:
+            for adminRole in settings.ADMIN_ROLES:
+                if userRole == adminRole:
+                    session["admin"] = 1
+                    break
+    except Exception as e:
+        print(e)
 
     return redirect(url_for('helios.profile'))
 
-@helios.route('/test')
-def test():
-    return session["userID"]
+# @helios.route('/test')
+# def test():
+#     return session["userID"]
 
 def getRankFacts():
     rankFacts={}

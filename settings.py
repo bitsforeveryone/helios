@@ -18,6 +18,8 @@ class settings():
     C3T_DISCORD_ID = "675737159717617666"
 
     # TODO: Make this organic through discord bot
+    # TODO: Make roles configurable through admin panel
+    ADMIN_ROLES=["675737925555716117"]
     ADMIN_USERS=["218404015640281088"]
 
     BOT_ENDPOINT="http://127.0.0.1:8081/{}"
