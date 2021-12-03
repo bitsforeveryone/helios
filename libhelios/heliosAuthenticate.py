@@ -55,6 +55,8 @@ def getGuilds(accessToken, accessTokenType="Bearer"):
     userGuilds=userGuilds.json()
     return userGuilds
 
-def validateUser(session):
+def validateUser(session,admin=False):
     if 'userID' not in session:
+        return redirect(url_for("helios.login"))
+    if admin and session['admin'] != 1:
         return redirect(url_for("helios.login"))

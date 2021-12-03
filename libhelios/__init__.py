@@ -5,6 +5,7 @@ import string
 from hashlib import md5
 
 import requests
+from bson import ObjectId
 from flask import Blueprint, render_template, abort, session, request, redirect, url_for
 from flask_pymongo import PyMongo
 
@@ -275,21 +276,47 @@ def submitWriteup():
 
 @helios.route('/admin')
 def admin():
-    heliosAuthenticate.validateUser(session)
+    heliosAuthenticate.validateUser(session,admin=True)
 
-    writeups=list(mongoHelios.db.writeups.find({"name": {"$not": {"$eq":"template"}}}))
-    for writeup in writeups:
-        writeup["_id"]=str(writeup["_id"])
+    writeupsDB=list(mongoHelios.db.writeups.find({"name": {"$not": {"$eq":"template"}}}))
+    writeups=[]
+    for writeup in writeupsDB:
+        # TODO: show approved writeups manually somehow through JS
+        writeup["_id"] = str(writeup["_id"])
+        if writeup["approved"]==0:
+            writeups.append(writeup)
+
     return render_template("admin.html",writeups=writeups,rankFacts=getRankFacts(),session=session)
 
 @helios.route('/admin/gradeWriteup',methods=["POST"])
 def submitGrade():
-    heliosAuthenticate.validateUser(session)
+    heliosAuthenticate.validateUser(session, admin=True)
     # validate data
-    grade=request.form
-    if(int(grade["difficulty"])>0 and int(grade["quality"])>0):
-
-
+    gradeSubmit=request.form
+    if(int(gradeSubmit["difficulty"])>0 and int(gradeSubmit["quality"])>0):
+        # actual grading happens here
+        writeupID=ObjectId(gradeSubmit["writeup"])
+        writeup=mongoHelios.db.writeups.find_one({"_id":writeupID})
+        # if found, submit grade
+        if writeup:
+            # calculate grade
+            grades=getRankFacts()["writeups"]
+            userGrade=int(writeup["difficulty"])
+            graderGrade=int(gradeSubmit["difficulty"])
+            # maximum grade is between the two
+            finalGrade=(userGrade*0.25)+(graderGrade*0.75)
+            # now multiply by quality
+            finalGrade=finalGrade*(1+(int(gradeSubmit["quality"])/10))
+            user=USERS.find_one({"userID":writeup["writer"]})
+            if user:
+                # add grade to user
+                newXP=user["xp"]
+                newXP[writeup["category"]]+=finalGrade
+                USERS.update_one({"userID":writeup["writer"]},
+                {"$set":{"xp":newXP}})
+                # remove from play
+                mongoHelios.db.writeups.update_one({"_id":writeupID},
+                    {"$set": {"approved":1}})
 
     return redirect(url_for("helios.admin"))
 
