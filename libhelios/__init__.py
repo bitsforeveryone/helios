@@ -276,9 +276,6 @@ def submitWriteup():
 @helios.route('/admin')
 def admin():
     heliosAuthenticate.validateUser(session)
-    # validate admin
-    if session["userID"] not in settings.ADMIN_USERS:
-        abort(403)
 
     writeups=list(mongoHelios.db.writeups.find({"name": {"$not": {"$eq":"template"}}}))
     for writeup in writeups:
@@ -288,14 +285,10 @@ def admin():
 @helios.route('/admin/gradeWriteup',methods=["POST"])
 def submitGrade():
     heliosAuthenticate.validateUser(session)
-    # validate admin
-    if session["userID"] not in settings.ADMIN_USERS:
-        abort(403)
-
     # validate data
     grade=request.form
     if(int(grade["difficulty"])>0 and int(grade["quality"])>0):
-        print(grade)
+
 
 
     return redirect(url_for("helios.admin"))
