@@ -22,7 +22,8 @@
         <div class="col card p-3">
             <div class="alert alert-primary" role="alert">
                 You can submit writeups here. Writeups are documentation of how you solved a challenge, starting with
-                what you were given and including what you tried. Download a template <a href="/static/content/writeup.md">HERE</a>
+                what you were given and including what you tried. Download a template <a
+                    href="/static/content/writeup.md">HERE</a>
             </div>
             <form id="frmSubmitWriteup" action="/writeups/submit" enctype="multipart/form-data">
                 <div class="mb-3">
@@ -60,7 +61,13 @@
                 </div>
                 <div class="mb-3">
                     <label for="rngChallengeDifficulty" class="form-label">Difficulty</label>
-                    <input type="range" name="difficulty" class="form-range" min="0" max="5" id="rngChallengeDifficulty">
+                    <select id="rngChallengeDifficulty" name="difficulty" class="form-select" aria-label="Default select example">
+                        {% for difficulty in rankFacts["writeups"] %}
+                            <option value="{{ loop.index0 }}">{{ difficulty }}</option>
+                        {% endfor %}
+                    </select>
+                    {#                    <label for="rngChallengeDifficulty" class="form-label">Difficulty</label>#}
+                    {#                    <input type="range" name="difficulty" class="form-range" min="0" max="5" id="rngChallengeDifficulty">#}
                 </div>
                 <div class="mb-3">
                     <label for="selWriteup" class="form-label">Writeup</label>

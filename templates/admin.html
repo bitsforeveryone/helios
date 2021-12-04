@@ -128,7 +128,10 @@
         {% for item in writeups %}
             writeupsObject.push({{ item | tojson | safe }})
         {% endfor %}
-        writeupDifficulties = {{ rankFacts["writeups"] | tojson | safe }}
+        writeupDifficulties = []
+        {%  for writeupDiff in rankFacts["writeups"] %}
+            writeupDifficulties.push({{ writeupDiff | tojson | safe }});
+        {% endfor %}
 
             {# Runs when a writeup is selected from the list control #}
             function selectWriteup(elmnt) {
@@ -137,12 +140,12 @@
                 document.getElementById("crdWriteupPreview").classList.remove("d-none")
                 // set author difficulty
                 document.getElementById("authorDifficultyRating").children[0].innerHTML =
-                    Object.keys(writeupDifficulties)[writeupsObject[elmnt.id]["difficulty"]]
+                    writeupDifficulties[writeupsObject[elmnt.id]["difficulty"]]
                 //set control
                 document.getElementById("currentWriteup").value = writeupsObject[elmnt.id]["_id"]
 
                 //sanitize and render md
-                let clean=DOMPurify.sanitize( writeupsObject[elmnt.id]["file"] );
+                let clean = DOMPurify.sanitize(writeupsObject[elmnt.id]["file"]);
                 document.getElementById("writeupPreview").innerHTML = marked.parse(clean);
 
             }
