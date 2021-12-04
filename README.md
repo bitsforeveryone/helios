@@ -17,16 +17,25 @@ Installation:
 ```
 git clone git@github.com:bitsforeveryone/helios-bot.git && git clone git@github.com:bitsforeveryone/helios.git
 ```
-2. Copy `secrets` folder to this directory to store credentials, create an rsa key pair
+2. Install python/nodeJS dependencies (can create virtualenv, up to you)
+```
+pip install -r helios/requirements.txt
+npm install discord.js
+npm install bodyParser
+npm install express
+```
+3. Create a MongoDB installation. Currently Helios assumes a default port of `27017` and no password authentication (for now)
+https://docs.mongodb.com/manual/installation/
+4. Copy `secrets` folder to this directory to store credentials, create an rsa key pair
 ```
 cp -R helios/install/secrets . && cd "$_"
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -subj "/C=US/ST=New York/L=West Point/O=C3T/OU=Org/CN=helios.bfe.one" -nodes && cd ..
 ```
-3. Populate `misc.json` with Discord API data (some help here https://www.writebots.com/discord-bot-token/)
+5. Populate `misc.json` with Discord API data (some help here https://www.writebots.com/discord-bot-token/)
 ```
 nano secrets/misc.json
 ```
-4. (Optional) Create systemd service files for easy startup/shutdown. Note that some modification will be needed here depending what directory your files are in.
+6. (Optional) Create systemd service files for easy startup/shutdown. Note that some modification will be needed here depending what directory your files are in.
 ```
 cp helios/install/{helios.service,heliosbot.service} /etc/systemd/system
 ```
