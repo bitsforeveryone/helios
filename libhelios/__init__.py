@@ -314,7 +314,7 @@ def submitGrade():
                 newXP[writeup["category"]]+=finalGrade
                 USERS.update_one({"userID":writeup["writer"]},
                 {"$set":{"xp":newXP}})
-                # remove from play 
+                # remove from play
                 mongoHelios.db.writeups.update_one({"_id":writeupID},
                     {"$set": {"approved":1,"grade":finalGrade,"comments":gradeSubmit["comments"]}})
 
