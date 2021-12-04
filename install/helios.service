@@ -1,0 +1,13 @@
+[Unit]
+Description=Helios Daemon
+After=network.target
+Requires=network.target
+
+[Service]
+Wants=heliosbot.service
+WorkingDirectory=/home/c3t/helios
+ExecStart=/home/c3t/helios/launch.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target 
