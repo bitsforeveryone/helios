@@ -267,6 +267,11 @@ def submitWriteup():
             newWriteup["difficulty"]=requestDifficulty
             newWriteup["file"]=requestFile
             newWriteup["writer"]=session['userID']
+
+            # one last check
+            if any(field==None for field in newWriteup.values()):
+                raise KeyError
+
             mongoHelios.db.writeups.insert_one(newWriteup)
 
         except:
@@ -283,7 +288,7 @@ def admin():
     for writeup in writeupsDB:
         # TODO: show approved writeups manually somehow through JS
         writeup["_id"] = str(writeup["_id"])
-        if writeup["approved"]==0:
+        if writeup["approved"]==0 and writeup["file"] != None:
             writeups.append(writeup)
 
     return render_template("admin.html",writeups=writeups,rankFacts=getRankFacts(),session=session)
