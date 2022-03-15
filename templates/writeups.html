@@ -113,7 +113,8 @@ Submit Writeup
                 <div class="col">
                     <div id="overviewOptions" class="card p-4" style="position:fixed;">
                         <div class="form-check">
-                            <input class="form-check-input overviewOption" type="checkbox" value="" id="optionGradedWriteups">
+                            <input class="form-check-input overviewOption" type="checkbox" value=""
+                                   id="optionGradedWriteups">
                             <label class="form-check-label" for="optionGradedWriteups">
                                 Show graded writeups
                             </label>
@@ -122,20 +123,46 @@ Submit Writeup
                 </div>
             </div>
 
-            <a href="#" onclick="" class="d-none list-group-item list-group-item-action"
+            <!--template for each individual list item-->
+            <a href="#" onclick="this.querySelector('#subLink').click()" class="d-none list-group-item list-group-item-action"
                aria-current="true" id="entrytemplate">
                 <div class="d-flex w-100 justify-content-between">
                     <h5 id="entryTitle" class="mb-1">Test</h5>
                     <small></small>
                 </div>
-                <!--                            <p class="mb-1">Desc</p>-->
+                <button id="subLink" data-bs-toggle="modal"
+                        data-bs-target="#mdlWriteupPreview"
+                        type="button" onclick="selectWriteup(this)" class="btn btn-secondary mt-2">
+                    submission
+                </button>
+
             </a>
         </div>
     </div>
+    <!--    bonus space     -->
     <div class="col-2"></div>
 </div>
 
+<div id="mdlWriteupPreview" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Submission</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+                  <div id="mdlWriteupPreviewBody" class="modal-body">
+        ...
+      </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script type="text/javascript" src="static/purify.min.js"></script>
+
 <script>
+
     var writeupData = "";
 
     function updateCategory(element) {
@@ -158,6 +185,13 @@ Submit Writeup
                 let newNode = $("#entrytemplate")[0].cloneNode(true);
                 newNode.id = "";
                 newNode.querySelector("#entryTitle").innerText = targetWriteup["name"];
+                //offer link to submission
+                //https://stackoverflow.com/questions/10654971/create-text-file-from-string-using-js-and-html5
+                // var link = newNode.querySelector("#subLink");
+                // var fileString = JSON.stringify(targetWriteup["file"], undefined, 2);
+                // var blob = new Blob([fileString], {type: 'text/plain'});
+                // link.setAttribute('onclick', `location.href='${window.URL.createObjectURL(blob)}';`);
+                newNode.setAttribute('writeup', i)
                 //has writeup been graded or not
                 let indicator = newNode.querySelector("small")
                 if (targetWriteup["approved"] === 1) {
@@ -170,35 +204,47 @@ Submit Writeup
             }
         })
         //reset options
-        let options=$(".overviewOption")
-        options.value=0;
+        let options = $(".overviewOption")
+        options.value = 0;
         options.prop('checked', false).parent().removeClass('active');
 
+        console.log(writeupData)
 
     })
-    $("#optionGradedWriteups").click(function() {
+    $("#optionGradedWriteups").click(function () {
         //if checkbox checked, make unchecked and hide graded writeups
         let target = $("#lstWriteups")[0];
         if (this.value === "1") {
             this.value = 0;
             // go through and hide writeups where approved==0
 
-            for (let i =0; i<writeupData.length; i++) {
-                console.log(writeupData[i]["approved"])
-                if (writeupData[i]["approved"] === 1) {
-                    target.children[target.children.length-1-i].classList.add("d-none")
+            for (let i = 0; i < writeupData.length; i++) {
+                // console.log(writeupData[i]["approved"])
+                let writeupID = target.children[i].getAttribute('writeup');
+                // console.log(writeupData[writeupID])
+                if (writeupData[writeupID]["approved"] === 1) {
+                    target.children[i].classList.add("d-none")
                 }
             }
         } else {
             this.value = 1;
             // go through and show writeups where approved==0
-            for (let i =0; i<writeupData.length; i++) {
+            for (let i = 0; i < writeupData.length; i++) {
                 target.children[i].classList.remove("d-none")
             }
         }
         console.log(target.children)
     })
 
+    function selectWriteup(elmt) {
+        //get respective writeup
+        let currentWriteupID = elmt.parentElement.getAttribute('writeup');
+        //clean
+        let clean = DOMPurify.sanitize(writeupData[currentWriteupID]["file"]);
+
+        //put on screen
+        document.querySelector("#mdlWriteupPreviewBody").innerHTML = marked.parse(clean);
+    }
 </script>
 
 {% endblock %}
