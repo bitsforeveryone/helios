@@ -18,7 +18,7 @@ Submit Writeup
 
 {% block content %}
 <div class="row align-items-center">
-    
+
     <div class="col-2 align-self-start" role="tablist">
         <ul class="nav nav-pills flex-column" id="navTab">
             <li id="navSubmit" class="nav-item" role="presentation">
@@ -31,7 +31,7 @@ Submit Writeup
             </li>
         </ul>
     </div>
-    <div class="col tab-content" style="overflow-y: scroll;height: 60vh;">
+    <div class="col tab-content" style="">
         <div class="card p-3 tab-pane active" role="tabpanel" id="writeups-submit">
             <div class="alert alert-primary" role="alert">
                 You can submit writeups here. Writeups are documentation of how you solved a challenge, starting with
@@ -103,7 +103,7 @@ Submit Writeup
                 </div>
             </form>
         </div>
-        <div class="card p-3 tab-pane" role="tabpanel" id="writeups-overview">
+        <div class="card p-3 tab-pane" style="height: 60vh; overflow-y: scroll;" role="tabpanel" id="writeups-overview">
             <div class="row">
                 <div class="col-8">
                     <ul class="list-group" id="lstWriteups">
