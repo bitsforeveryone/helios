@@ -2,30 +2,41 @@
 
 # push in username
 {% block username %}
-    {{ session["name"] }}
+{{ session["name"] }}
 {% endblock username %}
 {% block admin %}
-    {% if session.admin == 1 %}
-        <li class="nav-item active">
-            <a class="nav-link fs-4" href="/admin">Admin</a>
-        </li>
-    {% endif %}
+{% if session.admin == 1 %}
+<li class="nav-item active">
+    <a class="nav-link fs-4" href="/admin">Admin</a>
+</li>
+{% endif %}
 {% endblock admin %}
 {% block title %}
-    Submit Writeup
+Submit Writeup
 {% endblock title %}
 
 
 {% block content %}
-    <div class="row align-items-center">
-        <div class="col-2"></div>
-        <div class="col card p-3">
+<div class="row align-items-center">
+
+    <div class="col-2 align-self-start" role="tablist">
+        <ul class="nav nav-pills flex-column" id="navTab">
+            <li id="navSubmit" class="nav-item" role="presentation">
+                <a class="nav-link active" role="tab" data-bs-toggle="pill" data-bs-target="#writeups-submit" aria-current="page" href="#">Submit Writeup</a>
+            </li>
+            <li id="navOverview" class="nav-item" role="presentation">
+                <a  class="nav-link" role="tab" data-bs-toggle="pill" data-bs-target="#writeups-overview" href="#" onclick="">My Writeups</a>
+            </li>
+        </ul>
+    </div>
+    <div class="col tab-content">
+        <div class="card p-3 tab-pane active" role="tabpanel" id="writeups-submit">
             <div class="alert alert-primary" role="alert">
                 You can submit writeups here. Writeups are documentation of how you solved a challenge, starting with
                 what you were given and including what you tried. Download a template <a
                     href="/static/content/writeup.md">HERE</a>
             </div>
-            <form id="frmSubmitWriteup" action="/writeups/submit" enctype="multipart/form-data">
+            <form id="frmSubmitWriteup" action="/api/writeups" enctype="multipart/form-data">
                 <div class="mb-3">
                     <div class="row">
                         <div class="col">
@@ -43,9 +54,9 @@
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="drpChallengeCategory">
                                     {% for category in rankFacts["categories"] %}
-                                        <li><a class="dropdown-item" href="#"
-                                               onclick="updateCategory(this)">{{ category.capitalize() }}</a>
-                                        </li>
+                                    <li><a class="dropdown-item" href="#"
+                                           onclick="updateCategory(this)">{{ category.capitalize() }}</a>
+                                    </li>
                                     {% endfor %}
                                 </ul>
                                 <input type="hidden" id="hiddenCategory" name="category">
@@ -61,37 +72,87 @@
                 </div>
                 <div class="mb-3">
                     <label for="rngChallengeDifficulty" class="form-label">Difficulty</label>
-                    <select id="rngChallengeDifficulty" name="difficulty" class="form-select" aria-label="Default select example">
+                    <select id="rngChallengeDifficulty" name="difficulty" class="form-select"
+                            aria-label="Default select example">
                         {% for difficulty in rankFacts["writeups"] %}
-                            <option value="{{ loop.index0 }}">{{ difficulty }}</option>
+                        <option value="{{ loop.index0 }}">{{ difficulty }}</option>
                         {% endfor %}
                     </select>
-                    {#                    <label for="rngChallengeDifficulty" class="form-label">Difficulty</label>#}
-                    {#                    <input type="range" name="difficulty" class="form-range" min="0" max="5" id="rngChallengeDifficulty">#}
+                    {# <label for="rngChallengeDifficulty" class="form-label">Difficulty</label>#}
+                    {# <input type="range" name="difficulty" class="form-range" min="0" max="5"
+                              id="rngChallengeDifficulty">#}
                 </div>
                 <div class="mb-3">
                     <label for="selWriteup" class="form-label">Writeup</label>
                     <input name="writeup" class="form-control" type="file" id="selWriteup"
                            accept=".md,.txt,.rtf">
                 </div>
-                {#                <div class="mb-3">#}
-                {#                    <label for="txtProfileSummary" class="form-label">Summary</label>#}
-                {#                    <textarea name="summary" class="form-control" id="txtProfileSummary" rows="3"></textarea>#}
-                {#                </div>#}
+                {#
+                <div class="mb-3">#}
+                    {# <label for="txtProfileSummary" class="form-label">Summary</label>#}
+                    {# <textarea name="summary" class="form-control" id="txtProfileSummary" rows="3"></textarea>#}
+                    {#
+                </div>
+                #}
                 <div class="row justify-content-center">
                     <button type="submit" formtarget="_self" formmethod="post" class="btn btn-primary w-25">
                         Submit
                     </button>
                 </div>
             </form>
-
         </div>
-        <div class="col-2"></div>
-    </div>
+        <div class="card p-3 tab-pane" role="tabpanel" id="writeups-overview">
+            <ul class="list-group" id="lstWriteups">
 
-    <script>function updateCategory(element) {
-        console.log(element);
-        document.getElementById("drpChallengeCategory").innerText = element.text;
-        document.getElementById("hiddenCategory").value = element.text.toLowerCase();
-    }</script>
+                    </ul>
+            <a href="#" onclick="selectWriteup(this)" class="d-none list-group-item list-group-item-action"
+                           aria-current="true" id="entrytemplate">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 id="entryTitle" class="mb-1">Test</h5>
+                                <small></small>
+                            </div>
+<!--                            <p class="mb-1">Desc</p>-->
+                        </a>
+        </div>
+    </div>
+    <div class="col-2"></div>
+</div>
+
+<script>function updateCategory(element) {
+    console.log(element);
+    document.getElementById("drpChallengeCategory").innerText = element.text;
+    document.getElementById("hiddenCategory").value = element.text.toLowerCase();
+}
+
+$("#navOverview").click(function () {
+    //get writeups from server
+    $.get("/api/writeups", function (data) {
+        //grab data, commit to listbox
+        let target=$("#lstWriteups")[0];
+        //clear
+        target.innerHTML="";
+        //for every writeup retrieved, add details to dom
+        for(let i=0;i<data.length;i++) {
+            let targetWriteup=data[i];
+            let newNode=$("#entrytemplate")[0].cloneNode(true);
+            newNode.id="";
+            newNode.classList.remove("d-none");
+            newNode.querySelector("#entryTitle").innerText=targetWriteup["name"];
+            //has writeup been graded or not
+            let indicator=newNode.querySelector("small")
+            if(targetWriteup["approved"]===1){
+                indicator.innerText="GRADED";
+            }
+            else {
+                indicator.innerText="PENDING";
+            }
+            console.log(newNode)
+            target.appendChild(newNode);
+            console.log(data)
+        }
+    })
+})
+
+</script>
+
 {% endblock %}

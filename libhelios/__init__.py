@@ -6,7 +6,7 @@ from hashlib import md5
 
 import requests
 from bson import ObjectId
-from flask import Blueprint, render_template, abort, session, request, redirect, url_for
+from flask import Blueprint, render_template, abort, session, request, redirect, url_for, jsonify
 from flask_pymongo import PyMongo
 
 # TODO: this is bad practice and I don't like it. Presently needed for DB connection.
@@ -235,49 +235,79 @@ def reclass():
 
 @helios.route('/writeups')
 def writeups():
-    return render_template('writeups.html',rankFacts=getRankFacts(),session=session)
+    # render writeups submission page
+    return render_template('writeups.html', rankFacts=getRankFacts(), session=session)
+
+@helios.route('/api/writeups',methods=['GET','POST','PUT'])
+def writeupsAPI():
+    #validate user
+    heliosAuthenticate.validateUser(session)
+    #REST
+    #####
+    #GET == get all writeups associated with this entry
+    #####
+    if request.method=="GET":
+        userWriteups=list(mongoHelios.db.writeups.find({"name": {"$not": {"$eq": "template"}},"writer": {"$eq":session['userID']}}))
+        # jsonify can't handle objectIDs
+        for index in range(len(userWriteups)):
+            userWriteups[index]["_id"]=str(userWriteups[index]["_id"])
+        return jsonify(userWriteups)
+    #####
+    #POST == create new writeup in the database
+    #####
+    elif request.method=="POST":
+        rankFacts = getRankFacts()
+        if (len(request.form) > 0):
+            # validate contents
+            try:
+                requestName = (request.form["name"] if len(request.form["name"]) > 0 else None)
+                requestCategory = (
+                    request.form["category"] if request.form["category"] in rankFacts["categories"] else None)
+                requestDifficulty = (request.form["difficulty"]
+                                     if int(request.form["difficulty"]) < list(rankFacts["writeups"].values())[
+                    -1] else None)
+
+                # retrieve writeup markdown
+                requestFile = None
+                if len(request.files) > 0 and len(request.files['writeup'].filename) > 0:
+                    # remove sanitization for now - sanitized at endpoint
+                    # requestFile=escape(str(request.files['writeup'].read(),'utf-8'))
+                    requestFile = str(request.files['writeup'].read(), 'utf-8')
+
+                if None in [requestName, requestCategory, requestDifficulty]:
+                    raise ValueError
+                # commit to database
+                # create copy from template
+                newWriteup = mongoHelios.db.writeups.find_one({'name': 'template'}, {"_id": 0})
+                newWriteup["name"] = requestName
+                newWriteup["category"] = requestCategory
+                newWriteup["difficulty"] = requestDifficulty
+                newWriteup["file"] = requestFile
+                newWriteup["writer"] = session['userID']
+
+                # one last check
+                if any(field == None for field in newWriteup.values()):
+                    raise KeyError
+                mongoHelios.db.writeups.insert_one(newWriteup)
+            except:
+                # dip out
+                abort(406)
+            return redirect(url_for("helios.writeups"))
+
+
+@helios.route('/writeups/overview')
+def viewWriteups():
+    # validate user again
+    heliosAuthenticate.validateUser(session)
+    # pull database entries
+
+    return render_template('writeups.html', rankFacts=getRankFacts(), session=session)
 
 @helios.route('/writeups/submit',methods=["POST"])
 # take a given writeup submission and commit to the database
 def submitWriteup():
     heliosAuthenticate.validateUser(session)
-    rankFacts=getRankFacts()
-    if(len(request.form)>0):
-        # validate contents
-        try:
-            requestName=(request.form["name"] if len(request.form["name"])>0 else None)
-            requestCategory=(request.form["category"] if request.form["category"] in rankFacts["categories"] else None)
-            requestDifficulty=(request.form["difficulty"]
-                               if int(request.form["difficulty"]) < list(rankFacts["writeups"].values())[-1] else None)
-
-            #retrieve writeup markdown
-            requestFile=None
-            if len(request.files) > 0 and len(request.files['writeup'].filename) > 0:
-                # remove sanitization for now - sanitized at endpoint
-                # requestFile=escape(str(request.files['writeup'].read(),'utf-8'))
-                requestFile=str(request.files['writeup'].read(),'utf-8')
-
-            if None in [requestName,requestCategory,requestDifficulty]:
-                raise ValueError
-            #commit to database
-            # create copy from template
-            newWriteup = mongoHelios.db.writeups.find_one({'name': 'template'}, {"_id": 0})
-            newWriteup["name"]=requestName
-            newWriteup["category"]=requestCategory
-            newWriteup["difficulty"]=requestDifficulty
-            newWriteup["file"]=requestFile
-            newWriteup["writer"]=session['userID']
-
-            # one last check
-            if any(field==None for field in newWriteup.values()):
-                raise KeyError
-
-            mongoHelios.db.writeups.insert_one(newWriteup)
-
-        except:
-            # dip out
-            abort(406)
-    return redirect(url_for("helios.writeups"))
+    return 200
 
 @helios.route('/admin')
 def admin():
